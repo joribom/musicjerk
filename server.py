@@ -12,14 +12,21 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if self.path != '/':
             name = re.match('/(\w+)(.png)?', self.path)
             if name:
-                reader.generate_fig(name.group(1).replace(".png", ""))
-                self.path = '/' + name.group(1).replace(".png", "") + '.png'
+                name = name.group(1).lower().replace(".png", "")
+                if name in reader.names:
+                    reader.generate_fig(name)
+                    self.path = '/' + name + '.png'
         self.path = '/data' + self.path
         return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 Handler = MyRequestHandler
-
 httpd = SocketServer.TCPServer(("", PORT), Handler)
+try:
+    print "serving at port", PORT
+    httpd.serve_forever()
+except KeyboardInterrupt:
+    pass
+finally:
+    httpd.server_close()
+    print "Server closed!"
 
-print "serving at port", PORT
-httpd.serve_forever()

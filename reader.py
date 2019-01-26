@@ -46,6 +46,10 @@ class Reader:
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
 
+    @property
+    def names(self):
+        return self.user_data.keys()
+
 
     def generate_fig(self, name):
         fig, ax = plt.subplots()
@@ -54,7 +58,8 @@ class Reader:
         bar_width = 0.7
         opacity = 0.4
 
-        ratings = [self.user_data[name][album]['Rating'] for album in self.albums]
+        print "Attempting to generate fig for %s!" % name
+        ratings = [self.user_data[name][album]['Rating'] for album in self.albums if album in self.user_data[name]]
         ratings = [int(rating) for rating in ratings if rating != ""]
         counts  = [0] * 11
         for rating in ratings:
