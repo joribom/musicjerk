@@ -2,6 +2,7 @@ import SimpleHTTPServer
 import SocketServer
 from reader import Reader
 import re
+from datetime import datetime, timedelta
 
 PORT = 8000
 
@@ -12,6 +13,8 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if self.path != '/':
             name = re.match('/(\w+)(.png)?', self.path)
             if name:
+                if datetime.now() - reader.latest_update > timedelta(minutes = 1):
+                    reader.readValues()
                 name = name.group(1).lower().replace(".png", "")
                 if name in reader.names:
                     reader.generate_fig(name)

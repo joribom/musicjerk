@@ -1,6 +1,7 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 class Reader:
 
@@ -16,9 +17,11 @@ class Reader:
         # Find a workbook by name and open the first sheet
         # Make sure you use the right name here.
         self.sheet = client.open("Musicjerk's big album sheet").sheet1
+        self.latest_update = None
         self.readValues()
 
     def readValues(self):
+        print "Refreshing values from google sheets"
         all_values   = self.sheet.get_all_values()
         top_row      = all_values[0]
         col_headers  = all_values[1]
@@ -45,6 +48,7 @@ class Reader:
                 if album not in self.user_data.get(name):
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
+        self.latest_update = datetime.now()
 
     @property
     def names(self):
