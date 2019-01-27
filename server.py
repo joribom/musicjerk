@@ -13,16 +13,18 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if self.path != '/':
             name = re.match('/(\w+)(.png)?', self.path)
             if name:
-                if datetime.now() - reader.latest_update > timedelta(minutes = 1):
-                    reader.readValues()
+                if reader.update_required():
+                    reader.update_values()
                 name = name.group(1).lower().replace(".png", "")
                 if name in reader.names:
                     reader.generate_fig(name)
                     self.path = '/' + name + '.png'
         self.path = '/data' + self.path
+        print "Get request for %s" % self.path
         return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 Handler = MyRequestHandler
+SocketServer.TCPServer.allow_reuse_address = True
 httpd = SocketServer.TCPServer(("", PORT), Handler)
 try:
     print "serving at port", PORT
@@ -30,6 +32,5 @@ try:
 except KeyboardInterrupt:
     pass
 finally:
-    httpd.server_close()
+    httpd.shutdown()
     print "Server closed!"
-

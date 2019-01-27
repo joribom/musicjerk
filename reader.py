@@ -1,7 +1,9 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import matplotlib.pyplot as plt
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil.parser import parse as parse_time
+from dateutil.tz import tzlocal
 
 class Reader:
 
@@ -17,11 +19,23 @@ class Reader:
         # Find a workbook by name and open the first sheet
         # Make sure you use the right name here.
         self.sheet = client.open("Musicjerk's big album sheet").sheet1
+        self.latest_update_check = datetime.now(tzlocal())
         self.latest_update = None
-        self.readValues()
+        self.update_values()
 
-    def readValues(self):
-        print "Refreshing values from google sheets"
+    def update_required(self):
+        if datetime.now(tzlocal()) - self.latest_update_check < timedelta(seconds = 5):
+            print "Recently checked for updates!"
+            return False
+        latest_change_time = parse_time(self.sheet.cell(1, 1).value)
+        print self.sheet.cell(1, 1).value
+        self.latest_update_check = datetime.now(tzlocal())
+        print "Update required: " + str(self.latest_update < latest_change_time)
+        return self.latest_update < latest_change_time
+
+    def update_values(self):
+        print "Updating values from google sheets"
+        self.latest_update = datetime.now(tzlocal())
         all_values   = self.sheet.get_all_values()
         top_row      = all_values[0]
         col_headers  = all_values[1]
@@ -48,7 +62,6 @@ class Reader:
                 if album not in self.user_data.get(name):
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
-        self.latest_update = datetime.now()
 
     @property
     def names(self):
