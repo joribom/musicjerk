@@ -6,6 +6,8 @@ from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
 from person import Person
 
+# Decorator for functions that use data from google sheets,
+# to automatically check for new updates.
 def check_updates(func):
     def wrapper(reader, *args):
         if reader.update_required():
@@ -20,7 +22,6 @@ class Reader:
              'https://www.googleapis.com/auth/drive']
 
     def __init__(self):
-        print "in __init__!"
         creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', Reader.scope)
         client = gspread.authorize(creds)
 
@@ -34,16 +35,16 @@ class Reader:
 
     def update_required(self):
         if datetime.now(tzlocal()) - self.latest_update_check < timedelta(seconds = 5):
-            print "Recently checked for updates!"
             return False
         latest_change_time = parse_time(self.sheet.cell(1, 1).value)
         print self.sheet.cell(1, 1).value
         self.latest_update_check = datetime.now(tzlocal())
-        print "Update required: " + str(self.latest_update < latest_change_time)
+        if self.latest_update < latest_change_time:
+            print "Update required..."
         return self.latest_update < latest_change_time
 
     def update_values(self):
-        print "Updating values from google sheets"
+        print "Updating values from google sheets..."
         self.latest_update = datetime.now(tzlocal())
         all_values   = self.sheet.get_all_values()
         top_row      = all_values[0]
@@ -76,6 +77,7 @@ class Reader:
                 if album not in self.user_data.get(name):
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
+        print "All values have been updated!"
 
     @property
     @check_updates
@@ -94,9 +96,7 @@ class Reader:
         bar_width = 0.7
         opacity = 0.4
 
-        print "Attempting to generate fig for %s!" % name
-        #ratings = [self.user_data[name][album]['Rating'] for album in self.albums if album in self.user_data[name]]
-        #ratings = [int(rating) for rating in ratings if rating != ""]
+        print "Generating new figure for %s." % name
         ratings = self.people.get(name).get_ratings()
         counts  = [0] * 11
         for rating in ratings:
@@ -119,6 +119,7 @@ class Reader:
     def get_likeness(self, person):
         if person not in self.people:
             return []
+        print "Generating comparison list for %s." % str(person)
         likenesses = []
         for person2 in self.people:
             if person == person2:
