@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+  <title>Comparison for {{ name.title() }}</title>
+</head>
+<body>
+   <h1>Comparison for {{ name.title() }}</h1>
+
+    <ol id="comparison_list">
+    {% for name, likeness in comparison_list %}
+        <li><a href="compare_{{ name }}">{{ name }}: </a><a>{{ likeness }} %</a></li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

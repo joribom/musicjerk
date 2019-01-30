@@ -69,7 +69,6 @@ class Reader:
                 if album not in self.user_data.get(name):
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
-        self.write_likeness()
 
     @property
     def names(self):
@@ -103,29 +102,14 @@ class Reader:
         fig.tight_layout()
         plt.savefig("data/%s.png" % name, bbox_inches='tight')
 
-    def write_likeness(self):
-        for person in self.people:
-            html = """<!DOCTYPE html>
-            <html>
-
-            <head>
-              <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
-              <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
-              <title>Our Company</title>
-            </head>
-
-            <body>
-            """
-            likenesses = []
-            for person2 in self.people:
-                if person == person2:
-                    continue
-                likenesses.append((person2, self.people.get(person).compare(self.people.get(person2))))
-            likenesses = sorted(likenesses, key = lambda x: 0 if x[1] is None else -x[1])
-            for likeness in likenesses:
-                html += "\n<p>%s likeness: %s</p>" % (likeness[0], ("%.2f %%" % (likeness[1] * 100) if likeness[1] is not None else "None"))
-            html += """
-            </body>
-            </html>"""
-            with open('data/compare_%s.html' % person, 'w') as f:
-                f.write(html)
+    def get_likeness(self, person):
+        if person not in self.people:
+            return []
+        likenesses = []
+        for person2 in self.people:
+            if person == person2:
+                continue
+            likenesses.append((person2, self.people.get(person).compare(self.people.get(person2))))
+        likenesses = sorted(likenesses, key = lambda x: 0 if x[1] is None else -x[1])
+        likenesses = [(name.title(), "%.2f" % (likeness * 100) if likeness is not None else "None") for name, likeness in likenesses]
+        return likenesses
