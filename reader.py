@@ -6,6 +6,13 @@ from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
 from person import Person
 
+def check_updates(func):
+    def wrapper(reader, *args):
+        if reader.update_required():
+            reader.update_values()
+        return func(reader, *args)
+    return wrapper
+
 class Reader:
 
     # use creds to create a client to interact with the Google Drive API
@@ -71,10 +78,16 @@ class Reader:
                 self.user_data[name][album][header] = value
 
     @property
+    @check_updates
     def names(self):
+        if self.update_required():
+            self.update_values()
         return self.user_data.keys()
 
+    @check_updates
     def generate_fig(self, name):
+        if self.update_required():
+            self.update_values()
         fig, ax = plt.subplots()
 
         index = range(0, 11)
@@ -102,6 +115,7 @@ class Reader:
         fig.tight_layout()
         plt.savefig("data/%s.png" % name, bbox_inches='tight')
 
+    @check_updates
     def get_likeness(self, person):
         if person not in self.people:
             return []

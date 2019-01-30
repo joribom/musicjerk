@@ -4,14 +4,19 @@
 <head>
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
-  <title>Comparison for {{ name.title() }}</title>
+  <title>Statistics for {{ name.title() }}</title>
 </head>
 <body>
+  <h1> {{ name.title() + ("'s" if name[-1] != 's' else "'") }} ratings: </h1>
+  <figure>
+    <img src="{{ name }}.png" alt="Ratings for {{ name.title() }}">
+  </figure>
+
    <h1>Comparison for {{ name.title() }}</h1>
 
     <ol id="comparison_list">
     {% for name, likeness in comparison_list %}
-        <li><a href="compare_{{ name }}">{{ name }}: </a><a>{{ likeness }} %</a></li>
+        <li><a href="{{ name }}">{{ name }}: </a><a>{{ likeness + ('%' if likeness != 'None' else '') }}</a></li>
     {% endfor %}
     </ul>
 </body>

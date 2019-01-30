@@ -24,25 +24,22 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         return StringIO(string)
 
     def send_head(self):
-        if self.path.startswith('/data/compare_'):
-            template = env.get_template('comparison.html')
-            name = self.path.replace('/data/compare_', '').replace('.html', '').lower()
-            print "In here! name = %s" % name
-            body = template.render(name = name, comparison_list = reader.get_likeness(name))
-            return self.send_html_string(body)
-        else:
-            return SimpleHTTPServer.SimpleHTTPRequestHandler.send_head(self)
+        if self.path.startswith('/data/'):
+            template = env.get_template('person.html')
+            name = self.path.replace('/data/', '').replace('.html', '').lower()
+            if name in reader.people:
+                body = template.render(name = name, comparison_list = reader.get_likeness(name))
+                return self.send_html_string(body)
+        return SimpleHTTPServer.SimpleHTTPRequestHandler.send_head(self)
 
     def do_GET(self):
-        if self.path != '/':
-            name = re.match('/(\w+)(.png)?', self.path)
+        self.path = self.path.lower()
+        if self.path.endswith('.png'):
+            name = re.match('/(\w+).png', self.path)
             if name:
-                if reader.update_required():
-                    reader.update_values()
                 name = name.group(1).lower().replace(".png", "")
                 if name in reader.names:
                     reader.generate_fig(name)
-                    self.path = '/' + name + '.png'
         self.path = '/data' + self.path
         print "Get request for %s" % self.path
         return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
