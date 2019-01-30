@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
+from person import Person
 
 class Reader:
 
@@ -20,6 +21,7 @@ class Reader:
         # Make sure you use the right name here.
         self.sheet = client.open("Musicjerk's big album sheet").sheet1
         self.latest_update_check = datetime.now(tzlocal())
+        self.people = {}
         self.latest_update = None
         self.update_values()
 
@@ -39,6 +41,10 @@ class Reader:
         all_values   = self.sheet.get_all_values()
         top_row      = all_values[0]
         col_headers  = all_values[1]
+        for cell in top_row[5:]:
+            name = cell.lower()
+            if name and self.people.get(name) is None:
+                self.people[name] = Person(name)
         self.general_data = {}
         self.user_data    = {}
         self.albums       = []
@@ -57,16 +63,17 @@ class Reader:
                 col    = col + 7
                 name   = top_row[col].lower() if top_row[col] else name
                 header = col_headers[col]
+                self.people[name].add_value(album, header, value)
                 if name not in self.user_data:
                     self.user_data[name] = {}
                 if album not in self.user_data.get(name):
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
+        self.write_likeness()
 
     @property
     def names(self):
         return self.user_data.keys()
-
 
     def generate_fig(self, name):
         fig, ax = plt.subplots()
@@ -76,8 +83,9 @@ class Reader:
         opacity = 0.4
 
         print "Attempting to generate fig for %s!" % name
-        ratings = [self.user_data[name][album]['Rating'] for album in self.albums if album in self.user_data[name]]
-        ratings = [int(rating) for rating in ratings if rating != ""]
+        #ratings = [self.user_data[name][album]['Rating'] for album in self.albums if album in self.user_data[name]]
+        #ratings = [int(rating) for rating in ratings if rating != ""]
+        ratings = self.people.get(name).get_ratings()
         counts  = [0] * 11
         for rating in ratings:
             counts[rating] += 1
@@ -94,11 +102,30 @@ class Reader:
         ax.set_xlim(left = -0.5, right = 11.5)
         fig.tight_layout()
         plt.savefig("data/%s.png" % name, bbox_inches='tight')
-        #plt.show()
 
-    #while True:
-    #    name = raw_input('Whose ratings do you want to see?\n').lower()
-    #    if name in user_data:
-    #        generate_fig(name)
-    #    else:
-    #        print ("No data for '%s'" % name)
+    def write_likeness(self):
+        for person in self.people:
+            html = """<!DOCTYPE html>
+            <html>
+
+            <head>
+              <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+              <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+              <title>Our Company</title>
+            </head>
+
+            <body>
+            """
+            likenesses = []
+            for person2 in self.people:
+                if person == person2:
+                    continue
+                likenesses.append((person2, self.people.get(person).compare(self.people.get(person2))))
+            likenesses = sorted(likenesses, key = lambda x: 0 if x[1] is None else -x[1])
+            for likeness in likenesses:
+                html += "\n<p>%s likeness: %s</p>" % (likeness[0], ("%.2f %%" % (likeness[1] * 100) if likeness[1] is not None else "None"))
+            html += """
+            </body>
+            </html>"""
+            with open('data/compare_%s.html' % person, 'w') as f:
+                f.write(html)
