@@ -1,5 +1,5 @@
-import SimpleHTTPServer, SocketServer
-from StringIO import StringIO
+import http.server, socketserver
+from io import StringIO
 import re
 from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -14,14 +14,15 @@ PORT = 8000
 
 reader = Reader()
 
-class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def send_html_string(self, string):
         self.send_response(200)
         self.send_header("Content-type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(string)))
         self.end_headers()
-        return StringIO(string)
+        self.wfile.write(bytes(string, "utf8"))
+        #return bytes(string, "utf8")
 
     def send_head(self):
         if self.path.startswith('/data/'):
@@ -30,7 +31,7 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             if name in reader.people:
                 body = template.render(name = name, comparison_list = reader.get_likeness(name))
                 return self.send_html_string(body)
-        return SimpleHTTPServer.SimpleHTTPRequestHandler.send_head(self)
+        return http.server.SimpleHTTPRequestHandler.send_head(self)
 
     def do_GET(self):
         self.path = self.path.lower()
@@ -41,17 +42,17 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 if name in reader.names:
                     reader.generate_fig(name)
         self.path = '/data' + self.path
-        print "Get request for %s" % self.path
-        return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+        print("Get request for %s" % self.path)
+        return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
 Handler = MyRequestHandler
-SocketServer.TCPServer.allow_reuse_address = True
-httpd = SocketServer.TCPServer(("", PORT), Handler)
+socketserver.TCPServer.allow_reuse_address = True
+httpd = socketserver.TCPServer(("", PORT), Handler)
 try:
-    print "serving at port", PORT
+    print("serving at port", PORT)
     httpd.serve_forever()
 except KeyboardInterrupt:
     pass
 finally:
     httpd.shutdown()
-    print "Server closed!"
+    print("Server closed!")

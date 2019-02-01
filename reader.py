@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
 from person import Person
+import os
 
 # Decorator for functions that use data from google sheets,
 # to automatically check for new updates.
@@ -37,14 +38,14 @@ class Reader:
         if datetime.now(tzlocal()) - self.latest_update_check < timedelta(seconds = 5):
             return False
         latest_change_time = parse_time(self.sheet.cell(1, 1).value)
-        print self.sheet.cell(1, 1).value
+        print(self.sheet.cell(1, 1).value)
         self.latest_update_check = datetime.now(tzlocal())
         if self.latest_update < latest_change_time:
-            print "Update required..."
+            print("Update required...")
         return self.latest_update < latest_change_time
 
     def update_values(self):
-        print "Updating values from google sheets..."
+        print("Updating values from google sheets...")
         self.latest_update = datetime.now(tzlocal())
         all_values   = self.sheet.get_all_values()
         top_row      = all_values[0]
@@ -77,26 +78,29 @@ class Reader:
                 if album not in self.user_data.get(name):
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
-        print "All values have been updated!"
+        print("All values have been updated!")
 
     @property
     @check_updates
     def names(self):
         if self.update_required():
             self.update_values()
-        return self.user_data.keys()
+        return list(self.user_data.keys())
 
     @check_updates
     def generate_fig(self, name):
         if self.update_required():
             self.update_values()
+        filepath = "data/%s.png" % name
+        if os.path.exists(filepath) and datetime.fromtimestamp(os.path.getctime(filepath), tzlocal()) > self.latest_update:
+            return
         fig, ax = plt.subplots()
 
-        index = range(0, 11)
+        index = list(range(0, 11))
         bar_width = 0.7
         opacity = 0.4
 
-        print "Generating new figure for %s." % name
+        print("Generating new figure for %s." % name)
         ratings = self.people.get(name).get_ratings()
         counts  = [0] * 11
         for rating in ratings:
@@ -108,7 +112,7 @@ class Reader:
         ax.set_xlabel('Rating')
         ax.set_ylabel('Amount')
         ax.set_title(name.title() + "'s Ratings")
-        ax.set_xticks([float(i) + bar_width/2 for i in index])
+        ax.set_xticks([float(i) for i in index])
         ax.set_xticklabels(list(map(str, index)))
         ax.set_ylim(bottom = -0.5, top = 20.5)
         ax.set_xlim(left = -0.5, right = 11.5)
@@ -119,7 +123,7 @@ class Reader:
     def get_likeness(self, person):
         if person not in self.people:
             return []
-        print "Generating comparison list for %s." % str(person)
+        print("Generating comparison list for %s." % str(person))
         likenesses = []
         for person2 in self.people:
             if person == person2:
