@@ -87,6 +87,9 @@ class Reader:
                 self.user_data[name][album][header] = value
         print("All values have been updated!")
 
+    def file_updated(self, filepath):
+        return os.path.exists(filepath) and datetime.fromtimestamp(os.path.getctime(filepath), tzlocal()) > self.latest_update
+
     @property
     @check_updates
     def names(self):
@@ -96,10 +99,8 @@ class Reader:
 
     @check_updates
     def generate_fig(self, name):
-        if self.update_required():
-            self.update_values()
         filepath = "data/%s.png" % name
-        if os.path.exists(filepath) and datetime.fromtimestamp(os.path.getctime(filepath), tzlocal()) > self.latest_update:
+        if self.file_updated(filepath):
             return
         fig, ax = plt.subplots()
 
@@ -144,6 +145,9 @@ class Reader:
 
     @check_updates
     def generate_average_rating_over_time(self):
+        filepath = "data/average_ratings_over_time.png"
+        if self.file_updated(filepath):
+            return
         fig, ax = plt.subplots()
         line_width = 1.0
         diff = 10
@@ -162,4 +166,4 @@ class Reader:
         ax.set_xlim(left = 0.5, right = indexes[-1] + 0.5)
         plt.yticks(range(11), labels = [str(i) for i in range(11)])
         fig.tight_layout()
-        plt.savefig("data/average_ratings_over_time.png", bbox_inches='tight')
+        plt.savefig(filepath, bbox_inches='tight')
