@@ -13,7 +13,6 @@ def best_match(possible_images, album, artist):
     best_res = 100000
     album = album.lower().replace(" ", '').replace("_", '')
     artist = artist.lower().replace(" ", '').replace("_", '')
-    print(album)
     for cur_image in possible_images:
         image_name = cur_image.replace("File:", '', 1)
         image_match_string = image_name.lower().replace(" ", '').replace("_", '')

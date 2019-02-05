@@ -45,9 +45,6 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
                 template = env.get_template('album.html')
                 body = template.render(album = album)
                 return self.send_html_string(body)
-            else:
-                print(name)
-                print(reader.album_dict.keys())
         return http.server.SimpleHTTPRequestHandler.send_head(self)
 
     def do_GET(self):
