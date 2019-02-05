@@ -57,7 +57,8 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
                     reader.generate_fig(name)
                 elif name == "average_ratings_over_time":
                     reader.generate_average_rating_over_time()
-        self.path = '/data' + self.path
+        if not self.path.endswith('.css'):
+            self.path = '/data' + self.path
         print("Get request for %s" % self.path)
         return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
