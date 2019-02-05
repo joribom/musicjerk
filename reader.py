@@ -105,24 +105,26 @@ class Reader:
 
         index = list(range(0, 11))
         bar_width = 0.7
-        opacity = 0.4
 
         print("Generating new figure for %s." % name)
         ratings = self.people.get(name).get_ratings()
         counts  = [0] * 11
+        max_amount = 20
         for rating in ratings:
             counts[rating] += 1
 
-        rects1 = ax.bar(index, counts, bar_width,
-                        alpha=opacity, color='b')
+        plt.grid(color='gray', axis = 'y', linestyle='-', linewidth=1, alpha = 0.5)
+        rects1 = ax.bar(index, counts, bar_width, color='lightskyblue', edgecolor='black')
 
         ax.set_xlabel('Rating')
         ax.set_ylabel('Amount')
         ax.set_title(name.title() + "'s Ratings")
         ax.set_xticks([float(i) for i in index])
         ax.set_xticklabels(list(map(str, index)))
-        ax.set_ylim(bottom = -0.5, top = 20.5)
+        ax.set_ylim(bottom = -0.5, top = max_amount + 0.5)
         ax.set_xlim(left = -0.5, right = 11.5)
+        plt.yticks(range(0, max_amount, 2), labels = [str(i) for i in range(0, max_amount, 2)])
+        ax.set_axisbelow(True)
         fig.tight_layout()
         plt.savefig("data/%s.png" % name, bbox_inches='tight')
 
