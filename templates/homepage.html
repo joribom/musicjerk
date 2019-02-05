@@ -4,18 +4,22 @@
 <head>
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
-  <title>Our Company</title>
+  <title>Big Musicjerk's Homepage</title>
 </head>
 
 <body>
 
-  <h1>Welcome to Our Company</h1>
-  <h2>Web Site Main Ingredients:</h2>
+  <h1>Welcome to the BIG Musicjerk</h1>
+  <h2>Our Members:</h2>
 
-  <p>Pages (HTML)</p>
-  <p>Style Sheets (CSS)</p>
-  <p>Computer Code (JavaScript)</p>
-  <p>Live Data (Files and Databases)</p>
+    <ol id="member_list">
+    {% for name in members %}
+      <li><a href="{{ name.title() }}">{{ name.title() }}</a></li>
+    {% endfor %}
+    </ul>
+
+
+  <h2>Our Rating Trend:</h2>
   <img src="/average_ratings_over_time.png" alt="Average Ratings Over Time">
 
 </body>

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
+from collections import OrderedDict
 from person import Person
 from album import Album
 
@@ -37,7 +38,7 @@ class Reader:
         # Make sure you use the right name here.
         self.sheet = client.open("Musicjerk's big album sheet").sheet1
         self.latest_update_check = datetime.now(tzlocal())
-        self.people = {}
+        self.people = OrderedDict()
         self.latest_update = None
         self.update_values()
 

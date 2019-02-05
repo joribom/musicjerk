@@ -25,10 +25,14 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def send_head(self):
         if self.path.startswith('/data/'):
-            template = env.get_template('person.html')
             name = self.path.replace('/data/', '').replace('.html', '').lower()
             if name in reader.people:
+                template = env.get_template('person.html')
                 body = template.render(name = name, comparison_list = reader.get_likeness(name))
+                return self.send_html_string(body)
+            elif name == "" or name == "index":
+                template = env.get_template('homepage.html')
+                body = template.render(members = reader.people.keys())
                 return self.send_html_string(body)
         return http.server.SimpleHTTPRequestHandler.send_head(self)
 
