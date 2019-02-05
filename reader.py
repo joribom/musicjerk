@@ -11,8 +11,12 @@ import os
 # to automatically check for new updates.
 def check_updates(func):
     def wrapper(reader, *args):
-        if reader.update_required():
-            reader.update_values()
+        try:
+            if reader.update_required():
+                reader.update_values()
+        except Exception as e:
+            print ("Caught an exception! '%s'" % str(e))
+            reader.__init__()
         return func(reader, *args)
     return wrapper
 
