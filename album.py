@@ -1,8 +1,12 @@
 class Album:
-    def __init__(self):
-        self.rating = None
-        self.best_tracks = None
-        self.worst_tracks = None
+    def __init__(self, name = None, artist = None, chosen_by = None,
+                 rating = None, best_tracks = None, worst_tracks = None):
+        self.name = name
+        self.artist = artist
+        self.chosen_by = chosen_by
+        self.rating = float(rating.replace(',', '.')) if rating else None
+        self.best_tracks = best_tracks
+        self.worst_tracks = worst_tracks
 
     def add_value(self, header, value):
         if header == "Rating":

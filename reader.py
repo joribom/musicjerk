@@ -1,11 +1,11 @@
-import gspread
+import gspread, os
 from oauth2client.service_account import ServiceAccountCredentials
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
 from person import Person
-import os
+from album import Album
 
 # Decorator for functions that use data from google sheets,
 # to automatically check for new updates.
@@ -19,6 +19,9 @@ def check_updates(func):
             reader.__init__()
         return func(reader, *args)
     return wrapper
+
+def avg(lst):
+    return sum(lst) / len(lst)
 
 class Reader:
 
@@ -65,12 +68,12 @@ class Reader:
             album        = row[0]
             if not album:
                 break                                        # Break since no more albums present
-            self.albums.append(album)
             artist       = row[1]
             chosen_by    = row[2]
             average      = row[3]
             best_tracks  = row[4]
             worst_tracks = row[5]
+            self.albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks))
             name = ""
             for col, value in enumerate(row[7:]):
                 col    = col + 7
@@ -136,3 +139,25 @@ class Reader:
         likenesses = sorted(likenesses, key = lambda x: 0 if x[1] is None else -x[1])
         likenesses = [(name.title(), "%.2f" % (likeness * 100) if likeness is not None else "None") for name, likeness in likenesses]
         return likenesses
+
+    @check_updates
+    def generate_average_rating_over_time(self):
+        fig, ax = plt.subplots()
+        line_width = 1.0
+        diff = 10
+
+        print("Generating new average over time figure")
+        ratings = [album.rating for album in self.albums if album.rating is not None]
+        indexes = range(1, len(ratings) + 1)
+        averages = [avg(ratings[0 if i - diff < 0 else i - diff:i]) for i in indexes]
+
+        rects1 = ax.plot(indexes, averages, line_width, color='b')
+
+        ax.set_xlabel('Album nr.')
+        ax.set_ylabel('Average Rating')
+        ax.set_title("Average Rating (%d Latest Ratings)" % diff)
+        ax.set_ylim(bottom = -0.5, top = 10.5)
+        ax.set_xlim(left = 0.5, right = indexes[-1] + 0.5)
+        plt.yticks(range(11), labels = [str(i) for i in range(11)])
+        fig.tight_layout()
+        plt.savefig("data/average_ratings_over_time.png", bbox_inches='tight')

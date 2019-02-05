@@ -22,7 +22,6 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(string)))
         self.end_headers()
         self.wfile.write(bytes(string, "utf8"))
-        #return bytes(string, "utf8")
 
     def send_head(self):
         if self.path.startswith('/data/'):
@@ -36,11 +35,13 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         self.path = self.path.lower()
         if self.path.endswith('.png'):
-            name = re.match('/(\w+).png', self.path)
+            name = re.match('/([\w_]+).png', self.path)
             if name:
                 name = name.group(1).lower().replace(".png", "")
                 if name in reader.names:
                     reader.generate_fig(name)
+                elif name == "average_ratings_over_time":
+                    reader.generate_average_rating_over_time()
         self.path = '/data' + self.path
         print("Get request for %s" % self.path)
         return http.server.SimpleHTTPRequestHandler.do_GET(self)
