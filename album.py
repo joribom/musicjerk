@@ -1,12 +1,17 @@
+from wikireader import get_wiki_info
+from urllib import parse
+
 class Album:
-    def __init__(self, name = None, artist = None, chosen_by = None,
+    def __init__(self, title = None, artist = None, chosen_by = None,
                  rating = None, best_tracks = None, worst_tracks = None):
-        self.name = name
+        self.title = title
         self.artist = artist
         self.chosen_by = chosen_by
         self.rating = float(rating.replace(',', '.')) if rating else None
         self.best_tracks = best_tracks
         self.worst_tracks = worst_tracks
+        self._summary = None
+        self._image_url = None
 
     def add_value(self, header, value):
         if header == "Rating":
@@ -15,3 +20,32 @@ class Album:
             self.best_tracks = best_tracks
         elif header == "Best Track(s)":
             self.worst_tracks = worst_tracks
+
+    def add_value(self, header, value):
+        if header == "Rating":
+            self.rating = int(value) if value else None
+        elif header == "Worst Track(s)":
+            self.best_tracks = best_tracks
+        elif header == "Best Track(s)":
+            self.worst_tracks = worst_tracks
+
+    @property
+    def url(self):
+        unicode_url = '%s-%s' % (self.title.lower().replace(" ", "_"), self.artist.lower().replace(" ", "_"))
+        return parse.quote(unicode_url.encode('utf-8')).lower()
+
+    @property
+    def image_description(self):
+        return 'Album Cover (from Wikipedia)' if self._image_url is not None else 'No image found :('
+
+    @property
+    def summary(self):
+        if self._summary is None:
+            self._summary, self._image_url = get_wiki_info(self.title, self.artist)
+        return self._summary
+
+    @property
+    def image_url(self):
+        if self._image_url is None:
+            self._summary, self._image_url = get_wiki_info(self.title, self.artist)
+        return self._image_url

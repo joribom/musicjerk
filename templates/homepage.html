@@ -10,6 +10,16 @@
 <body>
 
   <h1>Welcome to the BIG Musicjerk</h1>
+  <h2>This Week's Albums</h2>
+  <p>Mandatory:</p>
+  <a href="/albums/{{ mandatory.url }}">{{ mandatory.title }}</a>
+  <img src="{{ mandatory.image_url }}" alt="{{ mandatory.image_description }}">
+  <p>Optional:</p>
+  <a href="/albums/{{ optional.url }}">{{ optional.title }}</a>
+  <img src="{{ optional.image_url }}" alt="{{ optional.image_description }}">
+
+  <h2>Our Album List:</h2>
+  <a href="/albums/">Click Here!</a>
   <h2>Our Members:</h2>
 
     <ol id="member_list">

@@ -26,14 +26,28 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
     def send_head(self):
         if self.path.startswith('/data/'):
             name = self.path.replace('/data/', '').replace('.html', '').lower()
+            name = name if not name.endswith('/') else name[:-1] # Remove trailing /
             if name in reader.people:
                 template = env.get_template('person.html')
                 body = template.render(name = name, comparison_list = reader.get_likeness(name))
                 return self.send_html_string(body)
-            elif name == "" or name == "index":
+            elif name in ["", "index"]:
                 template = env.get_template('homepage.html')
-                body = template.render(members = reader.people.keys())
+                body = template.render(members = reader.people.keys(), mandatory = reader.albums[-2],
+                                       optional = reader.albums[-1])
                 return self.send_html_string(body)
+            elif name == "albums":
+                template = env.get_template('albums.html')
+                body = template.render(albums = [(album) for album in reader.albums])
+                return self.send_html_string(body)
+            elif name.replace('albums/', '') in reader.album_dict:
+                album = reader.album_dict[name.replace('albums/', '')]
+                template = env.get_template('album.html')
+                body = template.render(album = album)
+                return self.send_html_string(body)
+            else:
+                print(name)
+                print(reader.album_dict.keys())
         return http.server.SimpleHTTPRequestHandler.send_head(self)
 
     def do_GET(self):
@@ -50,9 +64,8 @@ class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
         print("Get request for %s" % self.path)
         return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
-Handler = MyRequestHandler
 socketserver.TCPServer.allow_reuse_address = True
-httpd = socketserver.TCPServer(("", PORT), Handler)
+httpd = socketserver.TCPServer(("", PORT), MyRequestHandler)
 try:
     print("serving at port", PORT)
     httpd.serve_forever()

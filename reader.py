@@ -39,6 +39,7 @@ class Reader:
         self.sheet = client.open("Musicjerk's big album sheet").sheet1
         self.latest_update_check = datetime.now(tzlocal())
         self.people = OrderedDict()
+        self.album_dict = {}
         self.latest_update = None
         self.update_values()
 
@@ -66,7 +67,7 @@ class Reader:
         self.user_data    = {}
         self.albums       = []
         for row in all_values[2:]:
-            album        = row[0]
+            album        = row[0].replace(" (Optional)", '')
             if not album:
                 break                                        # Break since no more albums present
             artist       = row[1]
@@ -75,6 +76,7 @@ class Reader:
             best_tracks  = row[4]
             worst_tracks = row[5]
             self.albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks))
+            self.album_dict[self.albums[-1].url] = self.albums[-1]
             name = ""
             for col, value in enumerate(row[7:]):
                 col    = col + 7
