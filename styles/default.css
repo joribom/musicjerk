@@ -19,3 +19,7 @@ p{
 a:link{
     color: #358cdd;
 }
+
+a:visited {
+    color: #358cdd;
+}
