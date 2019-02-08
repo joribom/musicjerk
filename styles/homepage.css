@@ -9,6 +9,34 @@ body{
 }
 .header{
     background-color: rgba(0,0,0,.1);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.search-div{
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.search-input{
+    border: none;
+    font-size: 18px;
+    height: 30px;
+    padding: 6px;
+}
+
+.search-button{
+    padding: 6px 10px;
+    margin-right: 16px;  
+    background: #ddd;
+    font-size: 17px;
+    border: none;
+    cursor: pointer;    
+    height: 42px;
+    width: 44px;
 }
 
 .body-div{
@@ -17,6 +45,14 @@ body{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    min-height: 1080px;
+}
+
+.album-info{
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    height: 100%;
 }
 
 .this-week-container{
@@ -58,14 +94,14 @@ body{
     color: #ffffff;
     font-size: 20px;
     margin-top: 3px;
-    margin-bottom: 3px;
+    margin-bottom: 0px;
     text-decoration: none;
 }
 
 .weekly-album-artist{
     text-align: center;
     color: #bbbbbb;
-    margin-top: 3px;
+    margin-top: 0px;
     margin-bottom: 3px;
     text-decoration: none;
 }

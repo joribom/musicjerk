@@ -6,6 +6,7 @@
   <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="../styles/default.css" />
   <link rel="stylesheet" type="text/css" href="../styles/homepage.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
   <title>Big Musicjerk's Homepage</title>
@@ -14,6 +15,12 @@
 <body>
   <div class="header">
     <h1 class="head-text">BIG Musicjerk</h1>
+    <div class="search-div">
+      <input class="search-input" type="text" placeholder="Search..">
+      <button class="search-button" type="submit">
+        <i class="fa fa-search"></i>
+      </button>
+    </div>
   </div>
   <div class="body-div">
     <div class="album-div">
@@ -32,9 +39,11 @@
               <p>Mandatory:</p>
               <a href="/albums/{{ mandatory.url }}">
                 <div>
-                    <img src="{{ mandatory.image_url }}" alt="{{ mandatory.image_description }}">
+                  <img src="{{ mandatory.image_url }}" alt="{{ mandatory.image_description }}">
+                  <div>
                     <p class="weekly-album-name">{{ mandatory.title }}</p>
                     <p class="weekly-album-artist">{{ mandatory.artist }}</p>
+                  </div>
                 </div>       
               </a>
             </div>
@@ -43,8 +52,10 @@
                 <a href="/albums/{{ optional.url }}">
                   <div>
                     <img src="{{ optional.image_url }}" alt="{{ optional.image_description }}">
-                    <p class="weekly-album-name">{{ optional.title }}</p>
-                    <p class="weekly-album-artist">{{ optional.artist }}</p>
+                    <div class="album-info">
+                      <p class="weekly-album-name">{{ optional.title }}</p>
+                      <p class="weekly-album-artist">{{ optional.artist }}</p>
+                    </div>
                   </div>
                 </a>
               </div>
@@ -67,6 +78,9 @@
     </div>
     
     
+  </div>
+  <div class="footer">
+
   </div>
 </body>
 </html>
