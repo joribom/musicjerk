@@ -13,44 +13,60 @@
 
 <body>
   <div class="header">
-    <h1 class="head-text">Welcome to the BIG Musicjerk</h1>
+    <h1 class="head-text">BIG Musicjerk</h1>
   </div>
   <div class="body-div">
-    <h2>This Week's Albums</h2>
-    <div class="current-albums">
-      <div class="mandatory">
-        <p>Mandatory:</p>
-        <a href="/albums/{{ mandatory.url }}">
-          <div>
-              <img src="{{ mandatory.image_url }}" alt="{{ mandatory.image_description }}">
-              <p class="weekly-album-name">{{ mandatory.title }}</p>
-          </div>       
-        </a>
-      </div>
-      <div class="optional">
-          <p>Optional:</p>
-          <a href="/albums/{{ optional.url }}">
-            <div>
-              <img src="{{ optional.image_url }}" alt="{{ optional.image_description }}">
-              <p class="weekly-album-name">{{ optional.title }}</p>
+    <div class="album-div">
+      
+        <h2>Our Album List:</h2>
+      
+      <a href="/albums/">Click Here!</a>
+    </div>
+    <div class="this-week-container">
+      <div class="this-week">
+          <div class="album-header">
+            <h2>- This Week's Albums -</h2>
+          </div>
+          <div class="current-albums">
+            <div class="mandatory">
+              <p>Mandatory:</p>
+              <a href="/albums/{{ mandatory.url }}">
+                <div>
+                    <img src="{{ mandatory.image_url }}" alt="{{ mandatory.image_description }}">
+                    <p class="weekly-album-name">{{ mandatory.title }}</p>
+                    <p class="weekly-album-artist">{{ mandatory.artist }}</p>
+                </div>       
+              </a>
             </div>
-          </a>
-        </div>
+            <div class="optional">
+                <p>Optional:</p>
+                <a href="/albums/{{ optional.url }}">
+                  <div>
+                    <img src="{{ optional.image_url }}" alt="{{ optional.image_description }}">
+                    <p class="weekly-album-name">{{ optional.title }}</p>
+                    <p class="weekly-album-artist">{{ optional.artist }}</p>
+                  </div>
+                </a>
+              </div>
+          </div>
+          <div>
+              <h2>Our Rating Trend:</h2>
+              <img src="/average_ratings_over_time.png" alt="Average Ratings Over Time">    
+          </div>
+      </div>
     </div>
     
-    <h2>Our Album List:</h2>
-    <a href="/albums/">Click Here!</a>
-    <h2>Our Members:</h2>
-  
+    <div class="members-div">
+      <h2>Our Members:</h2>
+
       <ol id="member_list">
       {% for name in members %}
         <li><a href="{{ name.title() }}">{{ name.title() }}</a></li>
       {% endfor %}
       </ul>
-  
-  
-    <h2>Our Rating Trend:</h2>
-    <img src="/average_ratings_over_time.png" alt="Average Ratings Over Time">    
+    </div>
+    
+    
   </div>
 </body>
 </html>
