@@ -1,20 +1,29 @@
 import http.server, socketserver
+from flask import Flask, render_template
 from io import StringIO
 import re
 from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from reader import Reader
 
-env = Environment(
-    loader = FileSystemLoader('templates'),
-    autoescape=select_autoescape(['html', 'xml'])
-)
-
 PORT = 8000
 
 reader = Reader()
+app = Flask(__name__, template_folder = 'templates')
 
-class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
+@app.errorhandler(KeyError)
+def page_not_found(err):
+  return render_template('404.html'), 404
+
+@app.route('/albums/<albumname>')
+def index(albumname):
+    album = reader.album_dict[albumname]
+    return render_template('album.html', album = album)
+
+if __name__ == '__main__':
+    app.run(debug = True, port = PORT)
+
+"""class MyRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def send_html_string(self, string):
         self.send_response(200)
@@ -71,4 +80,4 @@ except KeyboardInterrupt:
     pass
 finally:
     httpd.shutdown()
-    print("Server closed!")
+    print("Server closed!")"""
