@@ -89,6 +89,10 @@ class Reader:
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
         print("All values have been updated!")
+        for name in self.user_data:
+            self.generate_fig(name)
+        self.generate_average_rating_over_time()
+        print("New figures have been generated!")
 
     def file_updated(self, filepath):
         return os.path.exists(filepath) and datetime.fromtimestamp(os.path.getctime(filepath), tzlocal()) > self.latest_update

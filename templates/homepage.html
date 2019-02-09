@@ -24,9 +24,9 @@
   </div>
   <div class="body-div">
     <div class="album-div">
-      
+
         <h2>Our Album List:</h2>
-      
+
       <a href="/albums/">Click Here!</a>
     </div>
     <div class="this-week-container">
@@ -44,7 +44,7 @@
                     <p class="weekly-album-name">{{ mandatory.title }}</p>
                     <p class="weekly-album-artist">{{ mandatory.artist }}</p>
                   </div>
-                </div>       
+                </div>
               </a>
             </div>
             <div class="optional">
@@ -62,22 +62,22 @@
           </div>
           <div>
               <h2>Our Rating Trend:</h2>
-              <img src="/average_ratings_over_time.png" alt="Average Ratings Over Time">    
+              <img src="/average_ratings_over_time.png" alt="Average Ratings Over Time">
           </div>
       </div>
     </div>
-    
+
     <div class="members-div">
       <h2>Our Members:</h2>
 
       <ol id="member_list">
       {% for name in members %}
-        <li><a href="{{ name.title() }}">{{ name.title() }}</a></li>
+        <li><a href="/users/{{ name.title() }}/">{{ name.title() }}</a></li>
       {% endfor %}
       </ul>
     </div>
-    
-    
+
+
   </div>
   <div class="footer">
 
