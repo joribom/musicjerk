@@ -76,7 +76,7 @@ class Reader:
             best_tracks  = row[4]
             worst_tracks = row[5]
             self.albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks))
-            self.album_dict[self.albums[-1].url] = self.albums[-1]
+            self.album_dict[self.albums[-1].url_unparsed] = self.albums[-1]
             name = ""
             for col, value in enumerate(row[7:]):
                 col    = col + 7

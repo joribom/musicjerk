@@ -31,9 +31,12 @@ class Album:
             self.worst_tracks = worst_tracks
 
     @property
+    def url_unparsed(self):
+        return '%s-%s' % (self.title.lower().replace(" ", "_"), self.artist.lower().replace(" ", "_"))
+
+    @property
     def url(self):
-        unicode_url = '%s-%s' % (self.title.lower().replace(" ", "_"), self.artist.lower().replace(" ", "_"))
-        return parse.quote(unicode_url.encode('utf-8')).lower()
+        return parse.quote(self.url_unparsed.encode('utf-8')).lower()
 
     @property
     def image_description(self):

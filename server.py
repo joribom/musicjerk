@@ -34,7 +34,7 @@ def albums():
 
 @app.route('/albums/<albumname>/')
 def album(albumname):
-    album = reader.album_dict[albumname]
+    album = reader.album_dict[albumname.lower()]
     return render_template('album.html', album = album)
 
 @app.route('/users/<username>/')
