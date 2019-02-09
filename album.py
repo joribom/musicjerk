@@ -10,8 +10,9 @@ class Album:
         self.rating = float(rating.replace(',', '.')) if rating else None
         self.best_tracks = best_tracks
         self.worst_tracks = worst_tracks
-        self._summary = None
-        self._image_url = None
+        if self.title is not None and self.artist is not None:
+            print("Fetching info about %s - %s..." % (str(self.artist), str(self.title)))
+            self._summary, self._image_url = get_wiki_info(self.title, self.artist)
 
     def add_value(self, header, value):
         if header == "Rating":
@@ -40,12 +41,8 @@ class Album:
 
     @property
     def summary(self):
-        if self._summary is None:
-            self._summary, self._image_url = get_wiki_info(self.title, self.artist)
         return self._summary
 
     @property
     def image_url(self):
-        if self._image_url is None:
-            self._summary, self._image_url = get_wiki_info(self.title, self.artist)
         return self._image_url
