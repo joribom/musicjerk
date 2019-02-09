@@ -43,7 +43,7 @@ def best_match(possible_images, album, artist):
     for cur_image in possible_images:
         image_name = cur_image.replace("File:", '', 1)
         diff = string_compare(image_name.replace("_", ' '), album) + (string_compare(image_name.replace("_", ' '), artist) if album in image_name else 0)
-        print(album, artist, image_name, diff)
+        #print(album, artist, image_name, diff)
         if diff > best_diff:
             image = image_name
             best_diff = diff
@@ -54,7 +54,7 @@ def best_match(possible_images, album, artist):
 def get_page_id(search_string, album):
     try:
         search_string = search_string.replace(".", " ")
-        print("Attempting Wikipedia API call: %s" % search_url.format(search_string = parse.quote(search_string)))
+        #print("Attempting Wikipedia API call: %s" % search_url.format(search_string = parse.quote(search_string)))
         res = session.get(url = search_url.format(search_string = parse.quote(search_string))).json()
         pageid = best_pageid(res['query']['search'], album)
         return pageid
@@ -86,7 +86,7 @@ def get_image_url(pageid, album, artist):
             if image is None:
                 print("Found no matching image!")
                 return None
-            print("Attempting Wikipedia API call: %s" % image_url.format(filename = parse.quote(image)))
+            #print("Attempting Wikipedia API call: %s" % image_url.format(filename = parse.quote(image)))
             res = session.get(url = image_url.format(filename = parse.quote(image))).json()
             pages = res['query']['pages']
             return list(pages.values())[0]["imageinfo"][0]["url"]
