@@ -5,6 +5,7 @@ class Person:
     def __init__(self, name):
         self.name = name
         self.albums = OrderedDict()
+        self.likeness_list = []
 
     def reset_data():
         self.albums = OrderedDict()
@@ -24,6 +25,17 @@ class Person:
             if album.rating is not None:
                 ratings.append(album.rating)
         return ratings
+
+    def generate_likeness(self, people):
+        print("Generating likeness list for %s." % self.name)
+        likenesses = []
+        for other in people:
+            if self == other:
+                continue
+            likenesses.append((other.name, other.compare(self)))
+        likenesses = sorted(likenesses, key = lambda x: 0 if x[1] is None else -x[1])
+        likenesses = [(name.title(), "%.2f" % (likeness * 100) if likeness is not None else "None") for name, likeness in likenesses]
+        self.likeness_list = likenesses
 
     def compare(self, other):
         sum = 0.0

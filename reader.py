@@ -129,6 +129,8 @@ class Reader:
                 if album not in self.user_data.get(name):
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
+        for person in new_people.values():
+            person.generate_likeness(new_people.values())
         self.mutex.acquire()
         self._albums     = copy(new_albums)
         self._album_dict = copy(new_album_dict)
@@ -181,15 +183,8 @@ class Reader:
     def get_likeness(self, person):
         if person not in self.people:
             return []
-        print("Generating comparison list for %s." % str(person))
-        likenesses = []
-        for person2 in self.people:
-            if person == person2:
-                continue
-            likenesses.append((person2, self.people.get(person).compare(self.people.get(person2))))
-        likenesses = sorted(likenesses, key = lambda x: 0 if x[1] is None else -x[1])
-        likenesses = [(name.title(), "%.2f" % (likeness * 100) if likeness is not None else "None") for name, likeness in likenesses]
-        return likenesses
+        return self.people.get(person).likeness_list
+
 
     """@check_updates
     def generate_average_rating_over_time(self):
