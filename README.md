@@ -6,7 +6,7 @@ Server for "The Musicjerk Project" (patent pending)
 
 * Install python3
 * Install pip3
-* Run the command 'pip3 install oauth2client gspread jinja2 matplotlib spotipy'
+* Run the command 'pip3 install oauth2client gspread jinja2 matplotlib spotipy flask'
 
 ## How to run
 
