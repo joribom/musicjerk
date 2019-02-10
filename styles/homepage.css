@@ -39,13 +39,55 @@ body{
     width: 44px;
 }
 
+#album-list{
+    padding-left: 0px;
+}
+
+.current-album-image{
+    height: 400px;
+    width: 400px;
+}
+
+.album-list-head{
+    margin-bottom: 5px;
+    display: flex;
+    width: 100%;
+}
+
+.mandatory-head{
+    margin-left: 35px;
+}
+
+.optional-head{
+    margin-left: 70px;
+}
+
+.old-album-image{
+    height: 130px;
+    width: 130px;
+}
+
+.current-album-image{
+    height: 400px;
+    width: 400px;
+}
+
 .body-div{
     margin: 8px;
     margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     min-height: 1080px;
+}
+
+.album-list-div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .album-info{
@@ -78,11 +120,11 @@ body{
 }
 
 .album-div{
-    width: 300px;
+    width: 310px;
 }
 
 .members-div{
-    width: 300px;
+    width: 310px;
 }
 
 .members-div h2{

@@ -28,38 +28,36 @@
   </div>
   <div class="body-div">
     <div class="album-div">
-        <h2>Our Album List:</h2>
-        <ol id="album_list">
+      <h2 style="text-align: center">Previous albums</h2>
+      <ul id="album-list">
+        <div class="album-list-div">
+          <div class="album-list-head">
+            <span class="mandatory-head">Mandatory</span>
+            <span></span>
+            <span class="optional-head">Optional</span>
+          </div>
+          {% for mand, opt in albums %}
+          <div style="display: flex; flex-basis: row">
             <div>
-            {% for mand, opt in albums %}
-            <div class="mandatory">
-              <p>Mandatory:</p>
               <a href="/albums/{{ mand.url }}">
                 <div>
-                  <img src="{{ mand.image_url }}" alt="{{ mand.image_description }}">
-                  <div>
-                    <p class="weekly-album-name">{{ mand.title }}</p>
-                    <p class="weekly-album-artist">{{ mand.artist }}</p>
-                  </div>
+                  <img src="{{ mand.image_url }}" alt="{{ mand.image_description }}" class="old-album-image">
                 </div>
               </a>
             </div>
-            <div class="optional">
-                <p>Optional:</p>
-                <a href="/albums/{{ opt.url }}">
-                  <div>
-                    <img src="{{ opt.image_url }}" alt="{{ opt.image_description }}">
-                    <div class="album-info">
-                      <p class="weekly-album-name">{{ opt.title }}</p>
-                      <p class="weekly-album-artist">{{ opt.artist }}</p>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            {% endfor %}
+           <div class="optional">
+              <a href="/albums/{{ opt.url }}">
+                <div>
+                  <img src="{{ opt.image_url }}" alt="{{ opt.image_description }}" class="old-album-image">
+                </div>
+              </a>
             </div>
-        </ul>
+          </div>
+          {% endfor %}
+          </div>
+      </ul>
     </div>
+   
     <div class="this-week-container">
       <div class="this-week">
           <div class="album-header">
@@ -82,7 +80,7 @@
                 <p>Optional:</p>
                 <a href="/albums/{{ albums[0][1].url }}">
                   <div>
-                    <img src="{{ albums[0][1].image_url }}" alt="{{ albums[0][1].image_description }}" class="current-album-image">
+                    <img src="{{ albums[0][1].image_url }}" alt="{{ albums[0][1].image_description }}" class="current-album-image"  style="height: 400px; width:400px">
                     <div class="album-info">
                       <p class="weekly-album-name">{{ albums[0][1].title }}</p>
                       <p class="weekly-album-artist">{{ albums[0][1].artist }}</p>
