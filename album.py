@@ -3,14 +3,15 @@ from urllib import parse
 
 class Album:
     def __init__(self, title = None, artist = None, chosen_by = None,
-                 rating = None, best_tracks = None, worst_tracks = None):
+                 rating = None, best_tracks = None, worst_tracks = None, debug = False):
         self.title = title
         self.artist = artist
         self.chosen_by = chosen_by
         self.rating = float(rating.replace(',', '.')) if rating else None
         self.best_tracks = best_tracks
         self.worst_tracks = worst_tracks
-        if self.title is not None and self.artist is not None:
+        self.debug = debug
+        if self.title is not None and self.artist is not None and not self.debug:
             print("Fetching info about %s - %s..." % (str(self.artist), str(self.title)))
             self._summary, self._image_url = get_wiki_info(self.title, self.artist)
 

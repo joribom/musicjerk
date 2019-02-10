@@ -1,14 +1,19 @@
 import http.server, socketserver
 from flask import Flask, render_template, send_from_directory
 from io import StringIO
-import re
+import re, sys
 from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from reader import Reader
 
 PORT = 8000
 
-reader = Reader()
+debug = False
+if len(sys.argv) > 1:
+    if sys.argv[1] == "--debug":
+        debug = True
+
+reader = Reader(debug)
 app = Flask(__name__, template_folder = 'templates')
 
 @app.errorhandler(KeyError)
@@ -48,4 +53,4 @@ def user(username):
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.run(host = '0.0.0.0', port = PORT, debug=True)
+    app.run(host = '0.0.0.0', port = PORT, debug=debug)

@@ -30,12 +30,13 @@ class Reader:
     scope = ['https://spreadsheets.google.com/feeds',
              'https://www.googleapis.com/auth/drive']
 
-    def __init__(self):
+    def __init__(self, debug = False):
         creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', Reader.scope)
         client = gspread.authorize(creds)
 
         # Find a workbook by name and open the first sheet
         # Make sure you use the right name here.
+        self.debug = debug
         self.sheet = client.open("Musicjerk's big album sheet").sheet1
         self.latest_update_check = datetime.now(tzlocal())
         self.people = OrderedDict()
@@ -75,7 +76,7 @@ class Reader:
             average      = row[3]
             best_tracks  = row[4]
             worst_tracks = row[5]
-            self.albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks))
+            self.albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks, self.debug))
             self.album_dict[self.albums[-1].url_unparsed] = self.albums[-1]
             name = ""
             for col, value in enumerate(row[7:]):
@@ -89,9 +90,10 @@ class Reader:
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
         print("All values have been updated!")
-        for name in self.user_data:
-            self.generate_fig(name)
-        self.generate_average_rating_over_time()
+        if not self.debug:
+            for name in self.user_data:
+                self.generate_fig(name)
+            self.generate_average_rating_over_time()
         print("New figures have been generated!")
 
     def file_updated(self, filepath):
