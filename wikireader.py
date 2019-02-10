@@ -62,7 +62,7 @@ def get_page_id(search_string, album):
         print("Could not find wiki page for '%s'. Exception: %s" % (search_string, str(e)))
         return None
 
-def get_summary(pageid):
+def _get_summary(pageid):
     try:
         #print("Attempting Wikipedia API call: %s" % summary_url.format(pageid = pageid))
         res = session.get(url = summary_url.format(pageid = pageid)).json()
@@ -94,8 +94,14 @@ def get_image_url(pageid, album, artist):
         print("Could not get image url for pageid %s. Exception: %s" % (pageid, str(e)))
         return None
 
+def get_wiki_summary(album, artist):
+    pageid = get_page_id("%s %s" % (artist, album), album)
+    if pageid is None:
+        return "No Wikipedia entry found for this album! :("
+    return _get_summary(pageid)
+
 def get_wiki_info(album, artist):
     pageid = get_page_id("%s %s" % (artist, album), album)
     if pageid is None:
         return "No Wikipedia entry found for this album! :(", None
-    return get_summary(pageid), get_image_url(pageid, album, artist)
+    return _get_summary(pageid), get_image_url(pageid, album, artist)
