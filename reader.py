@@ -5,7 +5,9 @@ from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
 from collections import OrderedDict
 from person import Person
-from album import Album
+from album import Album, make_url
+from copy import copy
+from threading import Thread, Lock
 
 # Decorator for functions that use data from google sheets,
 # to automatically check for new updates.
@@ -13,7 +15,9 @@ def check_updates(func):
     def wrapper(reader, *args):
         try:
             if reader.update_required():
-                reader.update_values()
+                thread = Thread(target=reader.update_values, args=())
+                thread.daemon = True
+                thread.start()
         except Exception as e:
             print ("Caught an exception! '%s'" % str(e))
             reader.__init__()
@@ -38,10 +42,37 @@ class Reader:
         self.debug = debug
         self.sheet = client.open("Musicjerk's big album sheet").sheet1
         self.latest_update_check = datetime.now(tzlocal())
-        self.people = OrderedDict()
-        self.album_dict = {}
+        self._people = OrderedDict()
+        self._albums = []
+        self._album_dict = {}
         self.latest_update = None
+        self.mutex    = Lock()
+        self.updating = Lock()
         self.update_values()
+
+    @property
+    @check_updates
+    def albums(self):
+        self.mutex.acquire()
+        returnval = self._albums
+        self.mutex.release()
+        return returnval
+
+    @property
+    @check_updates
+    def album_dict(self):
+        self.mutex.acquire()
+        returnval = self._album_dict
+        self.mutex.release()
+        return returnval
+
+    @property
+    @check_updates
+    def people(self):
+        self.mutex.acquire()
+        returnval = self._people
+        self.mutex.release()
+        return returnval
 
     def update_required(self):
         if datetime.now(tzlocal()) - self.latest_update_check < timedelta(seconds = 5):
@@ -54,18 +85,23 @@ class Reader:
         return self.latest_update < latest_change_time
 
     def update_values(self):
+        if self.updating.locked():
+            return
+        self.updating.acquire()
         print("Updating values from google sheets...")
         self.latest_update = datetime.now(tzlocal())
         all_values   = self.sheet.get_all_values()
         top_row      = all_values[0]
         col_headers  = all_values[1]
+        new_people   = OrderedDict()
         for cell in top_row[5:]:
             name = cell.lower()
-            if name and self.people.get(name) is None:
-                self.people[name] = Person(name)
+            if name and new_people.get(name) is None:
+                new_people[name] = Person(name)
         self.general_data = {}
         self.user_data    = {}
-        self.albums       = []
+        new_albums        = []
+        new_album_dict    = {}
         for row in all_values[2:]:
             album        = row[0].replace(" (Optional)", '')
             if not album:
@@ -75,19 +111,30 @@ class Reader:
             average      = row[3]
             best_tracks  = row[4]
             worst_tracks = row[5]
-            self.albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks, self.debug))
-            self.album_dict[self.albums[-1].url_unparsed] = self.albums[-1]
+            url = make_url(album, artist)
+            if url in self._album_dict:
+                new_albums.append(self._album_dict[url])
+                new_albums[-1].update_values(chosen_by, average, best_tracks, worst_tracks)
+            else:
+                new_albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks, self.debug))
+            new_album_dict[url] = new_albums[-1]
             name = ""
             for col, value in enumerate(row[7:]):
                 col    = col + 7
                 name   = top_row[col].lower() if top_row[col] else name
                 header = col_headers[col]
-                self.people[name].add_value(album, header, value)
+                new_people[name].add_value(album, header, value)
                 if name not in self.user_data:
                     self.user_data[name] = {}
                 if album not in self.user_data.get(name):
                     self.user_data[name][album] = {}
                 self.user_data[name][album][header] = value
+        self.mutex.acquire()
+        self._albums     = copy(new_albums)
+        self._album_dict = copy(new_album_dict)
+        self._people     = copy(new_people)
+        self.mutex.release()
+        self.updating.release()
         print("All values have been updated!")
 
     def file_updated(self, filepath):
@@ -96,8 +143,6 @@ class Reader:
     @property
     @check_updates
     def names(self):
-        if self.update_required():
-            self.update_values()
         return list(self.user_data.keys())
 
     """@check_updates
@@ -156,7 +201,7 @@ class Reader:
         diff = 10
 
         print("Generating new average over time figure")
-        ratings = [album.rating for album in self.albums if album.rating is not None]
+        ratings = [album.rating for album in self._albums if album.rating is not None]
         indexes = range(1, len(ratings) + 1)
         averages = [avg(ratings[0 if i - diff < 0 else i - diff:i]) for i in indexes]
 
