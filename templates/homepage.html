@@ -24,10 +24,37 @@
   </div>
   <div class="body-div">
     <div class="album-div">
-
         <h2>Our Album List:</h2>
-
-      <a href="/albums/">Click Here!</a>
+        <ol id="album_list">
+            <div>
+            {% for mand, opt in albums %}
+            <div class="mandatory">
+              <p>Mandatory:</p>
+              <a href="/albums/{{ mand.url }}">
+                <div>
+                  <img src="{{ mand.image_url }}" alt="{{ mand.image_description }}">
+                  <div>
+                    <p class="weekly-album-name">{{ mand.title }}</p>
+                    <p class="weekly-album-artist">{{ mand.artist }}</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="optional">
+                <p>Optional:</p>
+                <a href="/albums/{{ opt.url }}">
+                  <div>
+                    <img src="{{ opt.image_url }}" alt="{{ opt.image_description }}">
+                    <div class="album-info">
+                      <p class="weekly-album-name">{{ opt.title }}</p>
+                      <p class="weekly-album-artist">{{ opt.artist }}</p>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+            </div>
+        </ul>
     </div>
     <div class="this-week-container">
       <div class="this-week">
@@ -37,24 +64,24 @@
           <div class="current-albums">
             <div class="mandatory">
               <p>Mandatory:</p>
-              <a href="/albums/{{ mandatory.url }}">
+              <a href="/albums/{{ albums[0][0].url }}">
                 <div>
-                  <img src="{{ mandatory.image_url }}" alt="{{ mandatory.image_description }}">
+                  <img src="{{ albums[0][0].image_url }}" alt="{{ albums[0][0].image_description }}">
                   <div>
-                    <p class="weekly-album-name">{{ mandatory.title }}</p>
-                    <p class="weekly-album-artist">{{ mandatory.artist }}</p>
+                    <p class="weekly-album-name">{{ albums[0][0].title }}</p>
+                    <p class="weekly-album-artist">{{ albums[0][0].artist }}</p>
                   </div>
                 </div>
               </a>
             </div>
             <div class="optional">
                 <p>Optional:</p>
-                <a href="/albums/{{ optional.url }}">
+                <a href="/albums/{{ albums[0][1].url }}">
                   <div>
-                    <img src="{{ optional.image_url }}" alt="{{ optional.image_description }}">
+                    <img src="{{ albums[0][1].image_url }}" alt="{{ albums[0][1].image_description }}">
                     <div class="album-info">
-                      <p class="weekly-album-name">{{ optional.title }}</p>
-                      <p class="weekly-album-artist">{{ optional.artist }}</p>
+                      <p class="weekly-album-name">{{ albums[0][1].title }}</p>
+                      <p class="weekly-album-artist">{{ albums[0][1].artist }}</p>
                     </div>
                   </div>
                 </a>

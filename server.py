@@ -18,7 +18,7 @@ def page_not_found(err):
 @app.route('/')
 def main_page():
     return render_template('homepage.html', members = reader.people.keys(),
-                           mandatory = reader.albums[-2], optional = reader.albums[-1])
+                           albums = list(zip(reader.albums[:-1][::-2], reader.albums[::-2])))
 
 @app.route('/styles/<filename>')
 def style(filename):
@@ -46,4 +46,6 @@ def user(username):
                            comparison_list = reader.get_likeness(name))
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = PORT)
+    app.jinja_env.auto_reload = True
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.run(host = '0.0.0.0', port = PORT, debug=True)
