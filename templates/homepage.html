@@ -66,7 +66,7 @@
               <p>Mandatory:</p>
               <a href="/albums/{{ albums[0][0].url }}">
                 <div>
-                  <img src="{{ albums[0][0].image_url }}" alt="{{ albums[0][0].image_description }}">
+                  <img src="{{ albums[0][0].image_url }}" alt="{{ albums[0][0].image_description }}" class="current-album-image">
                   <div>
                     <p class="weekly-album-name">{{ albums[0][0].title }}</p>
                     <p class="weekly-album-artist">{{ albums[0][0].artist }}</p>
@@ -78,7 +78,7 @@
                 <p>Optional:</p>
                 <a href="/albums/{{ albums[0][1].url }}">
                   <div>
-                    <img src="{{ albums[0][1].image_url }}" alt="{{ albums[0][1].image_description }}">
+                    <img src="{{ albums[0][1].image_url }}" alt="{{ albums[0][1].image_description }}" class="current-album-image">
                     <div class="album-info">
                       <p class="weekly-album-name">{{ albums[0][1].title }}</p>
                       <p class="weekly-album-artist">{{ albums[0][1].artist }}</p>
