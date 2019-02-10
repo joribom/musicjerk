@@ -23,7 +23,8 @@ def page_not_found(err):
 @app.route('/')
 def main_page():
     return render_template('homepage.html', members = reader.people.keys(),
-                           albums = list(zip(reader.albums[:-1][::-2], reader.albums[::-2])))
+                           albums = list(zip(reader.albums[:-1][::-2], reader.albums[::-2])),
+                           albumtitles = [album.title for album in reader.albums])
 
 @app.route('/styles/<filename>')
 def style(filename):

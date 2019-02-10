@@ -13,10 +13,14 @@
 </head>
 
 <body>
+  <script>
+     var albumtitles = {{ albumtitles | safe }};
+  </script>
+
   <div class="header">
     <h1 class="head-text">BIG Musicjerk</h1>
     <div class="search-div">
-      <input class="search-input" type="text" placeholder="Search..">
+      <input class="search-input" type="text" placeholder="Search...">
       <button class="search-button" type="submit">
         <i class="fa fa-search"></i>
       </button>
