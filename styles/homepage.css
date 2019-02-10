@@ -41,6 +41,9 @@ body{
 
 #album-list{
     padding-left: 0px;
+    overflow: hidden;
+    overflow-y: scroll;
+    height: 710px;
 }
 
 .current-album-image{

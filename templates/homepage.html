@@ -29,13 +29,16 @@
   <div class="body-div">
     <div class="album-div">
       <h2 style="text-align: center">Previous albums</h2>
+      <div class="album-list-div">
+        <div class="album-list-head">
+          <span class="mandatory-head">Mandatory</span>
+          <span></span>
+          <span class="optional-head">Optional</span>
+        </div>
+      </div>
       <ul id="album-list">
         <div class="album-list-div">
-          <div class="album-list-head">
-            <span class="mandatory-head">Mandatory</span>
-            <span></span>
-            <span class="optional-head">Optional</span>
-          </div>
+
           {% for mand, opt in albums %}
           <div style="display: flex; flex-basis: row">
             <div>
