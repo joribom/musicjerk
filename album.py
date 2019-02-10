@@ -1,5 +1,5 @@
 from wikireader import get_wiki_summary, get_wiki_info
-from spotifyreader import get_spotify_image
+from spotifyreader import get_spotify_data
 from urllib import parse
 
 class Album:
@@ -14,7 +14,7 @@ class Album:
         self.debug = debug
         if self.title is not None and self.artist is not None and not self.debug:
             print("Fetching info about %s - %s..." % (str(self.artist), str(self.title)))
-            self._image_url = get_spotify_image(self.title, self.artist)
+            self.spotify_id, self._image_url = get_spotify_data(self.title, self.artist)
             if self._image_url is None:
                 self._summary, self._image_url = get_wiki_info(self.title, self.artist)
             else:

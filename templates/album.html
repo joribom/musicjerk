@@ -10,11 +10,16 @@
 
 <body>
 
-  <div style="width:100%;">
-    <h1>{{ album.title }}</h1>
-    <h2>by {{ album.artist }}</h2>
-    <p>{{ album.summary }}</p>
-    <img src="{{ album.image_url }}" style="max-width:50%; max-height:50%;" alt="{{ album.image_description }}">
+  <div>
+    <div style="width:100%">
+      <h1>{{ album.title }}</h1>
+      <h2>by {{ album.artist }}</h2>
+      <p>{{ album.summary }}</p>
+    </div>
+    <div style="width:100%; float:left">
+      <img src="{{ album.image_url }}" style="max-width:50%; max-height:50%;" alt="{{ album.image_description }}">
+      <iframe src="https://open.spotify.com/embed/album/{{ album.spotify_id }}" width="500" height="500" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+    </div>
   </div>
 
 </body>
