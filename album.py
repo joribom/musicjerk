@@ -1,6 +1,6 @@
 from wikireader import get_wiki_summary, get_wiki_info
 from spotifyreader import get_spotify_data
-from musicbrainzreader import get_album_info
+from discogsreader import get_genres
 from urllib import parse
 from threading import Lock, Thread
 
@@ -18,8 +18,8 @@ class Album:
         self._spotify_id = None
         self._image_url  = None
         self._summary    = None
-        self._tags       = []
-        self._tracks     = []
+        self._genres       = []
+        self._styles     = []
 
     def update_api_values(self):
         if self.title is not None and self.artist is not None and not self.debug:
@@ -36,10 +36,10 @@ class Album:
 
     def update_slow_api_values(self):
         print("Fetching slow info about %s - %s..." % (str(self.artist), str(self.title)))
-        tags, tracks = get_album_info(self.title, self.artist)
+        genres, styles = get_genres(self.title, self.artist)
         with self.mutex:
-            self._tags = tags
-            self._tracks = tracks
+            self._genres = genres if genres else []
+            self._styles = styles if styles else []
 
     def update_values(self, chosen_by, rating, best_tracks, worst_tracks):
         self.chosen_by = chosen_by
@@ -72,14 +72,14 @@ class Album:
             return self._spotify_id
 
     @property
-    def tags(self):
+    def genres(self):
         with self.mutex:
-            return  self._tags
+            return self._genres
 
     @property
-    def tracks(self):
+    def styles(self):
         with self.mutex:
-            return self._tracks
+            return self._styles
 
     @property
     def image_description(self):
