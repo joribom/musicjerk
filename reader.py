@@ -9,18 +9,21 @@ from album import Album, make_url
 from copy import copy
 from threading import Thread, Lock
 
+def start_in_thread(func, args=()):
+    thread = Thread(target=func, args=args)
+    thread.daemon = True
+    thread.start()
+
 # Decorator for functions that use data from google sheets,
 # to automatically check for new updates.
 def check_updates(func):
     def wrapper(reader, *args):
         try:
             if reader.update_required():
-                thread = Thread(target=reader.update_values, args=())
-                thread.daemon = True
-                thread.start()
+                start_in_thread(reader.update_values)
         except Exception as e:
             print ("Caught an exception! '%s'" % str(e))
-            reader.__init__()
+            reader.reconnect()
         return func(reader, *args)
     return wrapper
 
@@ -34,13 +37,10 @@ class Reader:
              'https://www.googleapis.com/auth/drive']
 
     def __init__(self, debug = False):
-        creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', Reader.scope)
-        client = gspread.authorize(creds)
-
+        self.reconnect()
         # Find a workbook by name and open the first sheet
         # Make sure you use the right name here.
         self.debug = debug
-        self.sheet = client.open("Musicjerk's big album sheet").sheet1
         self.latest_update_check = datetime.now(tzlocal())
         self._people = OrderedDict()
         self._albums = []
@@ -49,6 +49,11 @@ class Reader:
         self.mutex    = Lock()
         self.updating = Lock()
         self.update_values()
+
+    def reconnect(self):
+        creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', Reader.scope)
+        client = gspread.authorize(creds)
+        self.sheet = client.open("Musicjerk's big album sheet").sheet1
 
     @property
     @check_updates
@@ -137,7 +142,19 @@ class Reader:
         self._people     = copy(new_people)
         self.mutex.release()
         self.updating.release()
+        start_in_thread(self.update_album_api_values)
+        start_in_thread(self.update_slow_album_api_values)
         print("All values have been updated!")
+
+    def update_album_api_values(self):
+        print("Updating all albums from API calls...")
+        for album in self._albums:
+            album.update_api_values()
+
+    def update_slow_album_api_values(self):
+        print("Updating all albums from API calls...")
+        for album in self._albums:
+            album.update_slow_api_values()
 
     def file_updated(self, filepath):
         return os.path.exists(filepath) and datetime.fromtimestamp(os.path.getctime(filepath), tzlocal()) > self.latest_update
@@ -147,66 +164,8 @@ class Reader:
     def names(self):
         return list(self.user_data.keys())
 
-    """@check_updates
-    def generate_fig(self, name):
-        filepath = "data/%s.png" % name
-        if self.file_updated(filepath):
-            return
-        fig, ax = plt.subplots()
-
-        index = list(range(0, 11))
-        bar_width = 0.7
-
-        print("Generating new figure for %s." % name)
-        ratings = self.people.get(name).get_ratings()
-        counts  = [0] * 11
-        max_amount = 20
-        for rating in ratings:
-            counts[rating] += 1
-
-        plt.grid(color='gray', axis = 'y', linestyle='-', linewidth=1, alpha = 0.5)
-        rects1 = ax.bar(index, counts, bar_width, color='lightskyblue', edgecolor='black')
-
-        ax.set_xlabel('Rating')
-        ax.set_ylabel('Amount')
-        ax.set_title(name.title() + "'s Ratings")
-        ax.set_xticks([float(i) for i in index])
-        ax.set_xticklabels(list(map(str, index)))
-        ax.set_ylim(bottom = -0.5, top = max_amount + 0.5)
-        ax.set_xlim(left = -0.5, right = 11.5)
-        plt.yticks(range(0, max_amount, 2), labels = [str(i) for i in range(0, max_amount, 2)])
-        ax.set_axisbelow(True)
-        fig.tight_layout()
-        plt.savefig("data/%s.png" % name, bbox_inches='tight')"""
-
     @check_updates
     def get_likeness(self, person):
         if person not in self.people:
             return []
         return self.people.get(person).likeness_list
-
-
-    """@check_updates
-    def generate_average_rating_over_time(self):
-        filepath = "data/average_ratings_over_time.png"
-        if self.file_updated(filepath):
-            return
-        fig, ax = plt.subplots()
-        line_width = 1.0
-        diff = 10
-
-        print("Generating new average over time figure")
-        ratings = [album.rating for album in self._albums if album.rating is not None]
-        indexes = range(1, len(ratings) + 1)
-        averages = [avg(ratings[0 if i - diff < 0 else i - diff:i]) for i in indexes]
-
-        rects1 = ax.plot(indexes, averages, line_width, color='b')
-
-        ax.set_xlabel('Album nr.')
-        ax.set_ylabel('Average Rating')
-        ax.set_title("Average Rating (%d Latest Ratings)" % diff)
-        ax.set_ylim(bottom = -0.5, top = 10.5)
-        ax.set_xlim(left = 0.5, right = indexes[-1] + 0.5)
-        plt.yticks(range(11), labels = [str(i) for i in range(11)])
-        fig.tight_layout()
-        plt.savefig(filepath, bbox_inches='tight')"""

@@ -2,7 +2,6 @@ import requests, re
 from urllib import parse
 from difflib import SequenceMatcher
 
-"https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=1&srsearch=Yoshimi%20Battles%20The%20Pink%20Robots%20The%20Flaming%20Lips%20Album&utf8=&format=json"
 session = requests.Session()
 search_url = 'https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=5&srsearch={search_string}&utf8=&format=json'
 summary_url = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&pageids={pageid}'

@@ -20,6 +20,14 @@
       <img src="{{ album.image_url }}" style="max-width:50%; max-height:50%;" alt="{{ album.image_description }}">
       <iframe src="https://open.spotify.com/embed/album/{{ album.spotify_id }}" width="500" height="500" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
     </div>
+    <div>
+        <h1>Tags:</h1>
+      <ol id="album_list">
+      {% for tag in album.tags %}
+        <li>{{ tag }}</li>
+      {% endfor %}
+      </ul>
+    </div>
   </div>
 
 </body>
