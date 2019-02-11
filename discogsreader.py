@@ -1,4 +1,4 @@
-import discogs_client, json
+import discogs_client, json, re
 from pprint import pprint
 from datetime import datetime, timedelta
 from time import sleep
@@ -13,6 +13,8 @@ client = discogs_client.Client('MusicjerkServer/0.1', user_token=token)
 
 def get_genres(album, artist):
     try:
+        album = re.sub('\s*\(.*?\)', '', album)
+        artist = re.sub('\s*\(.*?\)', '', artist)
         global latest_fetch
         if datetime.now() - latest_fetch < timedelta(seconds = 1.5):
             sleep((timedelta(seconds = 3) - (datetime.now() - latest_fetch)).total_seconds())
