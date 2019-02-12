@@ -148,12 +148,12 @@ class Reader:
 
     def update_album_api_values(self):
         print("Updating all albums from API calls...")
-        for album in self._albums:
+        for album in self._albums[::-1]:
             album.update_api_values()
 
     def update_slow_album_api_values(self):
         print("Updating all albums from API calls...")
-        for album in self._albums:
+        for album in self._albums[::-1]:
             album.update_slow_api_values()
 
     def file_updated(self, filepath):

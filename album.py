@@ -18,8 +18,8 @@ class Album:
         self._spotify_id = None
         self._image_url  = None
         self._summary    = None
-        self._genres       = []
-        self._styles     = []
+        self._genres     = ['Still fetching...']
+        self._styles     = ['Still fetching...']
 
     def update_api_values(self):
         if self.title is not None and self.artist is not None and not self.debug:

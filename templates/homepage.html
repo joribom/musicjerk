@@ -48,6 +48,7 @@
                 </div>
               </a>
             </div>
+           {% if opt is not none %}
            <div class="optional">
               <a href="/albums/{{ opt.url }}">
                 <div>
@@ -55,12 +56,13 @@
                 </div>
               </a>
             </div>
+            {% endif %}
           </div>
           {% endfor %}
           </div>
       </ul>
     </div>
-   
+
     <div class="this-week-container">
       <div class="this-week">
           <div class="album-header">
