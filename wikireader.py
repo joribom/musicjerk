@@ -94,12 +94,16 @@ def get_image_url(pageid, album, artist):
         return None
 
 def get_wiki_summary(album, artist):
+    album  = re.sub('\s*\(.*?\)', '', album)
+    artist = re.sub('\s*\(.*?\)', '', artist)
     pageid = get_page_id("%s %s" % (artist, album), album)
     if pageid is None:
         return "No Wikipedia entry found for this album! :("
     return _get_summary(pageid)
 
 def get_wiki_info(album, artist):
+    album  = re.sub('\s*\(.*?\)', '', album)
+    artist = re.sub('\s*\(.*?\)', '', artist)
     pageid = get_page_id("%s %s" % (artist, album), album)
     if pageid is None:
         return "No Wikipedia entry found for this album! :(", None
