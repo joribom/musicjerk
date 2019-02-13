@@ -123,7 +123,7 @@ def lyrics_callback():
 @app.route('/webhook', methods = ['POST'])
 def webhook():
     payload = request.get_json()
-    if payload.get('ref') == "/refs/heads/master":
+    if payload.get('ref') == "refs/heads/master":
         print("Trying to pull new changes from git...")
         try:
             cmd_output = subprocess.check_output(['git', 'pull', 'origin', 'master'])
