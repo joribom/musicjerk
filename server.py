@@ -61,7 +61,7 @@ def album(albumname):
     album = reader.album_dict[albumname.lower()]
     return render_template('album.html', album = album)
 
-@app.route('/lyrics')
+@app.route('/lyrics/')
 def lyrics():
     return render_template('lyrics.html')
 
