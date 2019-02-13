@@ -22,6 +22,7 @@ var refresh_token;
 var current_song = "";
 var current_lyrics;
 var next_lyrics;
+var queued_checks = 1;
 var latest_spotify_request = new Date(new Date().getTime() - 5000);
 
 function setText(id, text){
@@ -50,11 +51,29 @@ function hideLoader(){
     });
   }
 
-  function setSong() {
+  function weakSetSong(){
     var five_seconds_ago = new Date(new Date().getTime() - 5000);
+    queued_checks -= 1;
     if (latest_spotify_request > five_seconds_ago){
+        if (queued_checks == 0){
+            setTimeout(weakSetSong, 5000);
+            queued_checks += 1;
+        } else {
+        }
         return;
+    } else {
+        return setSong();
     }
+  }
+
+  function updateTokens(){
+      $.getJSON('/lyrics/refresh_token?token=' + refresh_token, function(data) {
+          access_token = data;
+          weakSetSong()
+      });
+  }
+
+  function setSong() {
     latest_spotify_request = new Date()
     jQuery.ajax({
       url: 'https://api.spotify.com/v1/me/player/currently-playing',
@@ -63,13 +82,13 @@ function hideLoader(){
           xhr.setRequestHeader("Authorization", "Bearer " + access_token);
       },
       success: function(res) {
-          setTimeout(setSong, res.item.duration_ms - res.progress_ms + 1000);
+          setTimeout(weakSetSong, 5000);
+          queued_checks += 1;
           var songname = res.item.name;
           var artist = res.item.artists[0].name;
           var album = res.item.album.name;
           var id = res.item.id
           if (id == current_song){
-            setTimeout(setSong, 5000);
             return;
           }
           showLoader();
@@ -79,7 +98,11 @@ function hideLoader(){
                     '\nAlbum: ' + album;
           setText('maintext', txt);
           GetLyrics(songname, artist, id);
-          setTimeout(setSong, 5000);
+          setTimeout(setSong, res.item.duration_ms - res.progress_ms + 1000);
+      },
+      error: function(res) {
+          console.log(res);
+          updateTokens();
       }
     });
   }
@@ -99,12 +122,12 @@ function hideLoader(){
 </article>
 
 <script>
-  var hash = new URL(window.location.href).hash;
-  if (hash){
+  var url = new URL(window.location.href);
+  if (url.searchParams.get('access_token')) {
     var loginbtn = document.getElementById('loginbtn');
     loginbtn.parentNode.removeChild(loginbtn);
-    access_token = hash.split('&').filter(function(el) { if(el.match('access_token') !== null) return true; })[0].split('=')[1];
-    refresh_token = hash.split('&').filter(function(el) { if(el.match('refresh_token') !== null) return true; })[0].split('=')[1];
+    access_token = url.searchParams.get('access_token');
+    refresh_token = url.searchParams.get('refresh_token');
     console.log('Spotify tokens read.');
     setSong(access_token)
   } else {
