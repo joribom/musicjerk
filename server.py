@@ -1,10 +1,10 @@
-import http.server, socketserver, requests, base64, lyricsgenius, json, os
+import requests, base64, lyricsgenius, json
+import re, sys, os, subprocess
 from urllib.parse import urlencode, quote_plus
 from collections import OrderedDict
 from flask import Flask, render_template, send_from_directory, request, redirect
 from io import StringIO
 from itertools import zip_longest
-import re, sys
 from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from reader import Reader
@@ -126,6 +126,20 @@ def lyrics_callback():
     tokens = urlencode(OrderedDict(access_token = acc, refresh_token = refr))
     return redirect(request.base_url.replace('/callback', '?') + tokens)
 
+@app.route('/webhook', methods = ['POST'])
+def webhook():
+    payload = request.get_json()
+    if payload.get('refs') == "/refs/heads/master":
+        print("Trying to pull new changes from git...")
+        try:
+            cmd_output = subprocess.check_output(['git', 'pull', 'origin', 'master'])
+            return jsonify({'msg': str(cmd_output)})
+        except subprocess.CalledProcessError as error:
+            print("Code deployment failed!\n%s" % str(error.output))
+            return jsonify({'msg': str(error.output)})
+    else:
+        return jsonify({'msg': 'Not interested in %s' % str(payload.get(refs))})
+
 @app.route('/users/<username>/')
 def user(username):
     name = username.lower()
@@ -138,4 +152,3 @@ if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     run_simple('0.0.0.0', PORT, app, use_reloader = True)
-    #app.run(host = '0.0.0.0', port = PORT, debug=debug)
