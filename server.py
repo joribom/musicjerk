@@ -1,4 +1,4 @@
-import http.server, socketserver, requests, base64, lyricsgenius, json, os.path
+import http.server, socketserver, requests, base64, lyricsgenius, json, os
 from urllib.parse import urlencode, quote_plus
 from collections import OrderedDict
 from flask import Flask, render_template, send_from_directory, request, redirect
@@ -18,6 +18,8 @@ def pairwise(t):
     l = zip_longest(it, it, fillvalue = None)
     return [(b, a) if b is not None else (a, b) for a, b in l]
 
+if not os.path.exists('cache'):
+    os.makedirs('cache')
 
 debug = False
 if len(sys.argv) > 1:
@@ -104,7 +106,6 @@ def lyrics_refresh_token():
         'Authorization' : spotify_authorize
         }).json()
     token = result['access_token']
-    print("Got it! %s" % token)
     return json.dumps(token)
 
 @app.route('/lyrics/callback')
