@@ -2,7 +2,7 @@ import requests, base64, lyricsgenius, json
 import re, sys, os, subprocess
 from urllib.parse import urlencode, quote_plus
 from collections import OrderedDict
-from flask import Flask, render_template, send_from_directory, request, redirect
+from flask import Flask, render_template, send_from_directory, request, redirect, jsonify
 from io import StringIO
 from itertools import zip_longest
 from datetime import datetime, timedelta
