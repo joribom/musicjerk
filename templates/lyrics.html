@@ -22,6 +22,7 @@ var refresh_token;
 var current_song = "";
 var current_lyrics;
 var next_lyrics;
+var latest_spotify_request = new Date(new Date().getTime() - 5000);
 
 function setText(id, text){
   document.getElementById(id).innerHtml = text;
@@ -50,6 +51,11 @@ function hideLoader(){
   }
 
   function setSong() {
+    var five_seconds_ago = new Date(new Date().getTime() - 5000);
+    if (latest_spotify_request > five_seconds_ago){
+        return;
+    }
+    latest_spotify_request = new Date()
     jQuery.ajax({
       url: 'https://api.spotify.com/v1/me/player/currently-playing',
       type: 'GET',
@@ -74,7 +80,6 @@ function hideLoader(){
           setText('maintext', txt);
           GetLyrics(songname, artist, id);
           setTimeout(setSong, 5000);
-          setTimeout(setSong, res.item.duration_ms - res.progress_ms - ((new Date).getTime() - res.timestamp) + 100);
       }
     });
   }
