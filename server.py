@@ -27,7 +27,6 @@ if len(sys.argv) > 1:
     if sys.argv[1] == "--debug":
         debug = True
 
-
 with open('spotify_secret.json', 'r') as f:
     data = json.load(f)
 
