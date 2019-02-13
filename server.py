@@ -10,6 +10,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from reader import Reader
 from spotifyreader import get_client_id
 from operator import itemgetter
+from werkzeug.serving import run_simple
 
 PORT = 8000
 
@@ -136,4 +137,5 @@ def user(username):
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.run(host = '0.0.0.0', port = PORT, debug=debug)
+    run_simple('0.0.0.0', PORT, app, use_reloader = True)
+    #app.run(host = '0.0.0.0', port = PORT, debug=debug)
