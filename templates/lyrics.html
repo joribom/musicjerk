@@ -91,6 +91,7 @@ function hideLoader(){
           if (id == current_song){
             return;
           }
+          console.log("Detected new song playing! Getting new lyrics...")
           showLoader();
           current_song = id;
           var txt = 'You are listening to: \n' + songname +
@@ -101,7 +102,7 @@ function hideLoader(){
           setTimeout(setSong, res.item.duration_ms - res.progress_ms + 1000);
       },
       error: function(res) {
-          console.log(res);
+          console.log("Got exception while trying to poll spotify song!")
           updateTokens();
       }
     });
