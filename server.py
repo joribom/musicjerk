@@ -1,15 +1,10 @@
 import requests, base64, lyricsgenius, json
-import re, sys, os, subprocess
+import sys, os, subprocess
 from urllib.parse import urlencode, quote_plus
 from collections import OrderedDict
 from flask import Flask, render_template, send_from_directory, request, redirect, jsonify
-from io import StringIO
 from itertools import zip_longest
-from datetime import datetime, timedelta
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 from reader import Reader
-from spotifyreader import get_client_id
-from operator import itemgetter
 from werkzeug.serving import run_simple
 
 PORT = 8000
@@ -34,9 +29,9 @@ reader = Reader()
 session = requests.Session()
 client_id = data['second_id']
 client_secret = data['second_secret']
-access_token = data['genius_secret']
+genius_token = data['genius_secret']
 spotify_authorize = 'Basic ' + str(base64.b64encode((client_id + ':' + client_secret).encode('ascii')))[2:-1]
-genius = lyricsgenius.Genius(access_token)
+genius = lyricsgenius.Genius(genius_token)
 app = Flask(__name__, template_folder = 'templates')
 
 @app.errorhandler(KeyError)
