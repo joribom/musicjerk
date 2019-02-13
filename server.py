@@ -1,4 +1,4 @@
-import http.server, socketserver, requests, base64
+import http.server, socketserver, requests, base64, lyricsgenius, json, os.path
 from urllib.parse import urlencode, quote_plus
 from collections import OrderedDict
 from flask import Flask, render_template, send_from_directory, request, redirect
@@ -32,6 +32,8 @@ reader = Reader()
 session = requests.Session()
 client_id = data['second_id']
 client_secret = data['second_secret']
+access_token = data['genius_secret']
+genius = lyricsgenius.Genius(access_token)
 app = Flask(__name__, template_folder = 'templates')
 
 @app.errorhandler(KeyError)
@@ -67,8 +69,15 @@ def lyrics():
 
 @app.route('/lyrics/request')
 def lyric_request():
-    print(request.args)
-    return render_template('lyrics.html')
+    song = request.args.get('song')
+    artist = request.args.get('artist')
+    id = request.args.get('id')
+    filename = 'cache/%s.chc' % id
+    if not os.path.isfile(filename):
+        with open(filename, 'w') as f:
+            song = genius.search_song(song, artist)
+            f.write(json.dumps(song.lyrics))
+    return send_from_directory('cache', filename = id + ".chc")
 
 @app.route('/lyrics/login')
 def lyric_login():
