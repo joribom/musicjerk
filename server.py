@@ -128,6 +128,7 @@ def lyrics_callback():
 @app.route('/webhook', methods = ['POST'])
 def webhook():
     payload = request.get_json()
+    print(payload.get('refs'))
     if payload.get('refs') == "/refs/heads/master":
         print("Trying to pull new changes from git...")
         try:
@@ -137,7 +138,7 @@ def webhook():
             print("Code deployment failed!\n%s" % str(error.output))
             return jsonify({'msg': str(error.output)})
     else:
-        return jsonify({'msg': 'Not interested in %s' % str(payload.get(refs))})
+        return jsonify({'msg': 'Not interested in %s' % str(payload.get('refs'))})
 
 @app.route('/users/<username>/')
 def user(username):
