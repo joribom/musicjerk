@@ -49,6 +49,9 @@ class Reader:
         self.updating = Lock()
         self.update_values()
 
+    def user_exists(self, username):
+        return username.lower() in self.people
+
     def reconnect(self):
         creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', Reader.scope)
         client = gspread.authorize(creds)

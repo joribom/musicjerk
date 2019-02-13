@@ -35,7 +35,7 @@ genius = lyricsgenius.Genius(genius_token)
 app = Flask(__name__, template_folder = 'templates')
 
 @app.errorhandler(KeyError)
-def page_not_found(err):
+def page_not_found(err = None):
   return render_template('404.html'), 404
 
 @app.route('/')
@@ -138,7 +138,8 @@ def webhook():
 def user(username):
     name = username.lower()
     # FIXME: This line checks that user exists, should be done better
-    user = reader.people[name]
+    if not reader.user_exists(username):
+        return page_not_found()
     return render_template('person.html', name = name,
                            comparison_list = reader.get_likeness(name))
 
