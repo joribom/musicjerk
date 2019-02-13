@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<html>
+<head>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="../styles/default.css" />
+  <link rel="stylesheet" type="text/css" href="../styles/lyrics.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!-- This is an easter egg! Congratulations. You did it!-->
+<!--Wow hello what a dick is thick!-->
+
+<title>Spotify Lyrics</title>
+<meta charset="UTF-8">
+
+<script>
+var access_token;
+var refresh_token;
+var current_song = "";
+var current_lyrics;
+var next_lyrics;
+
+function setText(id, text){
+  document.getElementById(id).innerHtml = text;
+  document.getElementById(id).textContent = text;
+}
+
+function showLoader(){
+  document.getElementById("text2").style.display = "none";
+  document.getElementById("loader").style.display = "block";
+}
+function hideLoader(){
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("text2").style.display = "block";
+}
+
+  function UserAction() {
+      window.location.replace("/lyrics/login");
+  }
+  function GetLyrics(songname, artist, id) {
+    $.getJSON('/lyric_request?song=' + songname +
+              '&artist=' + artist + '&id=' + id, function(data) {
+        var lyrics = data;
+        setText('text2', lyrics);
+        hideLoader();
+        document.getElementById('text2').style.color = "yellow";
+    });
+  }
+
+  function setSong() {
+    jQuery.ajax({
+      url: 'https://api.spotify.com/v1/me/player/currently-playing',
+      type: 'GET',
+      beforeSend: function(xhr) {
+          xhr.setRequestHeader("Authorization", "Bearer " + access_token);
+      },
+      success: function(res) {
+          setTimeout(setSong, res.item.duration_ms - res.progress_ms + 1000);
+          var songname = res.item.name;
+          var artist = res.item.artists[0].name;
+          var album = res.item.album.name;
+          var id = res.item.id
+          if (id == current_song){
+            setTimeout(setSong, 5000);
+            return;
+          }
+          showLoader();
+          current_song = id;
+          var txt = 'You are listening to: \n' + songname +
+                    '\nby ' + artist +
+                    '\nAlbum: ' + album;
+          setText('maintext', txt);
+          GetLyrics(songname, artist, id);
+          setTimeout(setSong, 5000);
+          setTimeout(setSong, res.item.duration_ms - res.progress_ms - ((new Date).getTime() - res.timestamp) + 100);
+      }
+    });
+  }
+</script>
+
+</head>
+<body background="/public/blue.jpeg">
+<nav class="nav" style="position:fixed">
+  <h1 id='maintext' style="font-family:verdana; font-size:100%; color:white;">Spotify Lyrics</h1>
+  <button class='button' id="refreshbtn" type="submit" onclick="setSong()"style="vertical-align:middle"><span>Refresh </span></button>
+</nav>
+
+<article class="article">
+  <div id="loader"></div>
+  <p id='text2' style="font-family:verdana; font-size:300%; text-align:center; color:white;" class="animate-bottom"></p>
+  <button class='button' id="loginbtn" type="submit" onclick="UserAction()" style="vertical-align:middle"><span>Login </span></button>
+</article>
+
+<script>
+  var hash = new URL(window.location.href).hash;
+  if (hash){
+    var loginbtn = document.getElementById('loginbtn');
+    loginbtn.parentNode.removeChild(loginbtn);
+    access_token = hash.split('&').filter(function(el) { if(el.match('access_token') !== null) return true; })[0].split('=')[1];
+    refresh_token = hash.split('&').filter(function(el) { if(el.match('refresh_token') !== null) return true; })[0].split('=')[1];
+    console.log('Spotify tokens read.');
+    setSong(access_token)
+  } else {
+    var refreshbtn = document.getElementById('refreshbtn');
+    refreshbtn.parentNode.removeChild(refreshbtn);
+    setText('text2', "Press login to start.")
+  }
+
+</script>
+
+</body>
+</html>

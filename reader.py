@@ -36,11 +36,10 @@ class Reader:
     scope = ['https://spreadsheets.google.com/feeds',
              'https://www.googleapis.com/auth/drive']
 
-    def __init__(self, debug = False):
+    def __init__(self):
         self.reconnect()
         # Find a workbook by name and open the first sheet
         # Make sure you use the right name here.
-        self.debug = debug
         self.latest_update_check = datetime.now(tzlocal())
         self._people = OrderedDict()
         self._albums = []
@@ -121,7 +120,7 @@ class Reader:
                 new_albums.append(self._album_dict[url])
                 new_albums[-1].update_values(chosen_by, average, best_tracks, worst_tracks)
             else:
-                new_albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks, self.debug))
+                new_albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks))
             new_album_dict[url] = new_albums[-1]
             name = ""
             for col, value in enumerate(row[7:]):

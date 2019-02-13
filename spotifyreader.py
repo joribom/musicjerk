@@ -8,6 +8,9 @@ with open('spotify_secret.json', 'r') as f:
 client_credentials_manager = SpotifyClientCredentials(client_id = data["client_id"], client_secret = data["client_secret"])
 sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 
+def get_client_id():
+    return data['client_id']
+
 def get_spotify_image(album, artist):
     try:
         album = re.sub("\s*\(.*?\)", "", album)

@@ -9,12 +9,11 @@ def make_url(album, artist):
 
 class Album:
     def __init__(self, title = None, artist = None, chosen_by = None,
-                 rating = None, best_tracks = None, worst_tracks = None, debug = False):
+                 rating = None, best_tracks = None, worst_tracks = None):
         self.title = title
         self.artist = artist
         self.mutex = Lock()
         self.update_values(chosen_by, rating, best_tracks, worst_tracks)
-        self.debug = debug
         self._spotify_id = None
         self._image_url  = None
         self._summary    = None
@@ -22,7 +21,7 @@ class Album:
         self._styles     = ['Still fetching...']
 
     def update_api_values(self):
-        if self.title is not None and self.artist is not None and not self.debug:
+        if self.title is not None and self.artist is not None:
             print("Fetching info about %s - %s..." % (str(self.artist), str(self.title)))
             spotify_id, image_url = get_spotify_data(self.title, self.artist)
             if image_url is None:

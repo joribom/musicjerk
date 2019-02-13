@@ -1,11 +1,15 @@
-import http.server, socketserver
-from flask import Flask, render_template, send_from_directory
+import http.server, socketserver, requests, base64
+from urllib.parse import urlencode, quote_plus
+from collections import OrderedDict
+from flask import Flask, render_template, send_from_directory, request, redirect
 from io import StringIO
 from itertools import zip_longest
 import re, sys
 from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from reader import Reader
+from spotifyreader import get_client_id
+from operator import itemgetter
 
 PORT = 8000
 
@@ -20,7 +24,14 @@ if len(sys.argv) > 1:
     if sys.argv[1] == "--debug":
         debug = True
 
-reader = Reader(debug)
+
+with open('spotify_secret.json', 'r') as f:
+    data = json.load(f)
+
+reader = Reader()
+session = requests.Session()
+client_id = data['second_id']
+client_secret = data['second_secret']
 app = Flask(__name__, template_folder = 'templates')
 
 @app.errorhandler(KeyError)
@@ -49,6 +60,50 @@ def albums():
 def album(albumname):
     album = reader.album_dict[albumname.lower()]
     return render_template('album.html', album = album)
+
+@app.route('/lyrics')
+def lyrics():
+    return render_template('lyrics.html')
+
+@app.route('/lyrics/request')
+def lyric_request():
+    print(request.args)
+    return render_template('lyrics.html')
+
+@app.route('/lyrics/login')
+def lyric_login():
+    print(request.host_url)
+    redirect_uri = request.host_url + 'lyrics/callback'
+    scope = 'user-read-currently-playing user-read-playback-state'
+    querystr = urlencode(OrderedDict(
+        response_type = 'code',
+        client_id = client_id,
+        scope = scope,
+        show_dialog = 'true',
+        redirect_uri = redirect_uri
+    ), quote_via = quote_plus)
+    return redirect('https://accounts.spotify.com/authorize?' + querystr)
+
+@app.route('/lyrics/callback')
+def lyric_callback():
+    code = request.args.get('code')
+    options = { 'url': 'https://api.spotify.com/v1/me/player/currently-playing',
+                'headers': {'Authorization': 'Bearer ' + code, 'json': True}}
+    redirect_uri = request.host_url + 'lyrics/callback'
+    id = (client_id + ':' + client_secret).encode('ascii')
+
+    result = session.post(url = 'https://accounts.spotify.com/api/token',
+        data = {
+          'code': code,
+          'redirect_uri': redirect_uri,
+          'grant_type': 'authorization_code'
+        }, headers = {
+        'Authorization' : 'Basic ' + str(base64.b64encode(id))[2:-1]
+        }).json()
+
+    acc, refr = result['access_token'], result['refresh_token']
+    tokens = urlencode(OrderedDict(access_token = acc, refresh_token = refr))
+    return redirect(request.base_url.replace('/callback', '#') + tokens)
 
 @app.route('/users/<username>/')
 def user(username):
