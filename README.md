@@ -4,13 +4,13 @@ Server for "The Musicjerk Project" (patent pending)
 
 ## Dependencies
 
-* Python3 - Since the server runs in it
-* gspread/oauth2client - For accessing the Google Sheet where each member enters their rating.
-* flask/jinja2 - For the server and template handling
-* matplotlib - Used to plot graphs (DEPRECATED? Otherwise, soon to be deprecated)
-* spotipy - For accessing albums on spotify
-* lyricsgenius - For accessing lyrics from genius for the currently playing song
-* discogsclient - For getting album genres/styles
+* ```python3``` - Since the server runs in it
+* ```gspread/oauth2client``` - For accessing the Google Sheet where each member enters their rating.
+* ```flask/jinja2``` - For the server and template handling
+* ```matplotlib``` - Used to plot graphs (DEPRECATED? Otherwise, soon to be deprecated)
+* ```spotipy``` - For accessing albums on spotify
+* ```lyricsgenius``` - For accessing lyrics from genius for the currently playing song
+* ```discogsclient``` - For getting album genres/styles
 
 ## How to install
 * Install python3
