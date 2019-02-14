@@ -70,12 +70,17 @@ def lyrics_request():
     song = request.args.get('song')
     artist = request.args.get('artist')
     id = request.args.get('id')
-    filename = 'cache/%s.chc' % id
+    filename = 'cache/%s.json' % id
     if not os.path.isfile(filename):
+        song = genius.search_song(song, artist)
+        if song is None:
+            lyrics = "\n\n\n\n\nNo lyrics found, you avant-garde bastard :/"
+        else:
+            lyrics = song.lyrics
         with open(filename, 'w') as f:
-            song = genius.search_song(song, artist)
-            f.write(json.dumps(song.lyrics))
-    return send_from_directory('cache', filename = id + ".chc")
+            f.write(json.dumps(lyrics))
+    print("Sending json file %s" % (id + ".json"))
+    return send_from_directory('cache', filename = id + ".json")
 
 @app.route('/lyrics/login')
 def lyrics_login():

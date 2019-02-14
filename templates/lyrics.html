@@ -43,8 +43,11 @@ function hideLoader(){
       window.location.replace("/lyrics/login");
   }
   function GetLyrics(songname, artist, id) {
-    $.getJSON('/lyrics/request?song=' + songname +
-              '&artist=' + artist + '&id=' + id, function(data) {
+    $.getJSON('/lyrics/request', data = {
+        song: '"' + songname + '"',
+        artist: artist, 
+        id: id}, 
+      function(data) {
         var lyrics = data;
         setText('text2', lyrics);
         hideLoader();
