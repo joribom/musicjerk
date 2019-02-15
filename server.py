@@ -155,4 +155,12 @@ def user(username):
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    run_simple('0.0.0.0', PORT, app, use_reloader = True, ssl_context = ('/etc/letsencrypt/live/bigmusicjerk.com/fullchain.pem', '/etc/letsencrypt/live/bigmusicjerk.com/privkey.pem'))
+    fullchain = '/etc/letsencrypt/live/bigmusicjerk.com/fullchain.pem'
+    privkey   = '/etc/letsencrypt/live/bigmusicjerk.com/privkey.pem'
+    if os.path.exists(fullchain) and os.path.exists(privkey):
+        print('Running in server mode! (DEBUG == off)')
+        run_simple('0.0.0.0', PORT, app, use_reloader = True, ssl_context = (fullchain, privkey))
+    else:
+        print('Running in debug mode! (http://localhost:8000/)')
+        app.run('localhost', PORT, debug = True)
+
