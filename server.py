@@ -139,6 +139,10 @@ def webhook():
     else:
         return jsonify({'msg': 'Not interested in %s' % str(payload.get('ref'))})
 
+@app.route('/.well-known/<path:path>')
+def send_well_known(path):
+    return send_from_directory('.well-known', path)
+
 @app.route('/users/<username>/')
 def user(username):
     name = username.lower()
@@ -151,4 +155,4 @@ def user(username):
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    run_simple('0.0.0.0', PORT, app, use_reloader = True)
+    run_simple('0.0.0.0', PORT, app, use_reloader = True, ssl_context = ('/etc/letsencrypt/live/bigmusicjerk.com/fullchain.pem', '/etc/letsencrypt/live/bigmusicjerk.com/privkey.pem'))
