@@ -18,7 +18,9 @@
     </div>
     <div style="width:100%; float:left">
       <img src="{{ album.image_url }}" style="max-width:50%; max-height:50%;" alt="{{ album.image_description }}">
-      <iframe src="https://open.spotify.com/embed/album/{{ album.spotify_id }}" width="500" height="500" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+      {% if album.spotify_id is not none %}
+        <iframe src="https://open.spotify.com/embed/album/{{ album.spotify_id }}" width="500" height="500" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+      {% endif %}
     </div>
     <div style="width:45%; float:left">
       <h1>Genres:</h1>
