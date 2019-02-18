@@ -6,6 +6,7 @@ from flask import Flask, render_template, send_from_directory, request, redirect
 from itertools import zip_longest
 from reader import Reader
 from werkzeug.serving import run_simple
+import passwordmanager as db
 
 PORT = 8000
 
@@ -43,12 +44,13 @@ def page_not_found(err = None):
 
 @app.route('/')
 def main_page():
+    print(request.cookies.get('uid'))
+    print(request.cookies.get('session'))
     resp = make_response(render_template(
         'homepage.html', members = reader.people.keys(),
         albums = pairwise(reader.albums[::-1]),
         albumtitles = [album.title for album in reader.albums]
     ))
-    resp.set_cookie('test', 'test-cookie')
     return resp
 
 @app.route('/styles/<filename>')
@@ -61,7 +63,6 @@ def data(filename):
 
 @app.route('/albums/')
 def albums():
-    print(request.cookies.get('test'))
     return render_template('albums.html', albums = reader.albums)
 
 @app.route('/albums/<albumname>/')
@@ -137,6 +138,24 @@ def lyrics_callback():
     acc, refr = result['access_token'], result['refresh_token']
     tokens = urlencode(OrderedDict(access_token = acc, refresh_token = refr))
     return redirect(request.base_url.replace('/callback', '?') + tokens)
+
+@app.route('/login', methods = ['GET', 'POST'])
+def login():
+    error = None
+    if request.method == "POST":
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if db.check_password(username, password):
+            uid, session_hash = db.login(username)
+            print(uid, session_hash)
+            response = make_response(redirect('/'))
+            response.set_cookie('uid', str(uid))
+            response.set_cookie('session', session_hash)
+            return response
+        else:
+            error = "Invalid username/password!"
+    resp = make_response(render_template('login.html', error = error))
+    return resp
 
 @app.route('/webhook', methods = ['POST'])
 def webhook():

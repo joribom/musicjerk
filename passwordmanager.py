@@ -1,4 +1,5 @@
 import hashlib, uuid, psycopg2
+from secrets import token_urlsafe # For cookie generation
 
 conn = psycopg2.connect("dbname=musicjerk user=postgres")
 cur = conn.cursor()
@@ -20,21 +21,35 @@ def using_db(func):
 
 @using_db
 def get_user_id(cur, username):
-    cur.execute("SELECT id FROM users WHERE name=%s", (username,))
+    cur.execute("SELECT uid, cookie FROM users WHERE name=%s;", (username.lower(),))
     return cur.fetchone()
+
+@using_db
+def login(cur, username):
+    cur.execute("SELECT uid FROM users WHERE name=%s;", (username.lower(),))
+    uid = cur.fetchone()[0]
+    print(uid)
+    session = token_urlsafe(16);
+    cur.execute("UPDATE users SET session=%s WHERE uid=%s;", (session, uid))
+    return uid, session
+
+@using_db
+def verify_login(cur, uid, session):
+    cur.execute("SELECT session FROM users WHERE uid=%s;", (uid,))
+    return cur.fetchone() == session
 
 @using_db
 def add_password(cur, user, password):
     salt = uuid.uuid4().hex
     hashed_password = hashlib.sha512((password + salt).encode("ascii")).hexdigest()
-    cur.execute("INSERT INTO passwords VALUES ((SELECT uid FROM users WHERE name='%s'), '%s', '%s');" % (user, hashed_password, salt))
+    cur.execute("INSERT INTO passwords VALUES ((SELECT uid FROM users WHERE name=%s), %s, %s);", (user.lower(), hashed_password, salt))
 
 @using_db
 def check_password(cur, user, password):
-    cur.execute("SELECT hash, salt FROM users NATURAL JOIN passwords WHERE name=%s", (user,))
+    cur.execute("SELECT hash, salt FROM users NATURAL JOIN passwords WHERE name=%s;", (user.lower(),))
     stored_hash, salt = cur.fetchone()
     hash = hashlib.sha512((password + salt).encode("ascii")).hexdigest()
     return hash == stored_hash
 
 if __name__ == "__main__":
-    print(check_password("Johan", "test"))
+    print(check_password("johan", "test"))

@@ -33,12 +33,27 @@ CREATE TABLE public.passwords (
 ALTER TABLE public.passwords OWNER TO postgres;
 
 --
+-- Name: spotify_tokens; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.spotify_tokens (
+    uid integer NOT NULL,
+    access_token character varying(200),
+    access_until timestamp without time zone,
+    refresh_token character varying(200)
+);
+
+
+ALTER TABLE public.spotify_tokens OWNER TO postgres;
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.users (
     uid integer NOT NULL,
     name character varying(50) NOT NULL,
+    session character varying(100) DEFAULT NULL::character varying,
     cookie character varying(100) DEFAULT NULL::character varying
 );
 
@@ -75,10 +90,34 @@ ALTER TABLE ONLY public.users ALTER COLUMN uid SET DEFAULT nextval('public.users
 
 
 --
+-- Data for Name: passwords; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.passwords (uid, hash, salt) FROM stdin;
+\.
+
+
+--
+-- Data for Name: spotify_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.spotify_tokens (uid, access_token, access_until, refresh_token) FROM stdin;
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (uid, name, session, cookie) FROM stdin;
+\.
+
+
+--
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, true);
+SELECT pg_catalog.setval('public.users_id_seq', 2, true);
 
 
 --
@@ -87,6 +126,14 @@ SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 
 ALTER TABLE ONLY public.passwords
     ADD CONSTRAINT passwords_pkey PRIMARY KEY (uid);
+
+
+--
+-- Name: spotify_tokens spotify_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.spotify_tokens
+    ADD CONSTRAINT spotify_tokens_pkey PRIMARY KEY (uid);
 
 
 --
@@ -106,5 +153,14 @@ ALTER TABLE ONLY public.passwords
 
 
 --
+-- Name: spotify_tokens spotify_tokens_uid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.spotify_tokens
+    ADD CONSTRAINT spotify_tokens_uid_fkey FOREIGN KEY (uid) REFERENCES public.users(uid);
+
+
+--
 -- PostgreSQL database dump complete
 --
+
