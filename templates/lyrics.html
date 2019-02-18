@@ -1,45 +1,36 @@
-<!DOCTYPE html>
-<html lang="en-US">
-<html>
-<head>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
+{% extends "base.html" %}
+{% set active_page = "lyrics" %}
+{% block title %}Spotify Lyrics{% endblock %}
+{% block head %}
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="../styles/default.css" />
+  {{ super() }}
   <link rel="stylesheet" type="text/css" href="../styles/lyrics.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script>
+    var access_token;
+    var refresh_token;
+    var current_song = "";
+    var current_lyrics;
+    var next_lyrics;
+    var queued_checks = 1;
+    var latest_spotify_request = new Date(new Date().getTime() - 5000);
 
-<!-- This is an easter egg! Congratulations. You did it!-->
-<!--Wow hello what a dick is thick!-->
+    function setText(id, text){
+      document.getElementById(id).innerHtml = text;
+      document.getElementById(id).textContent = text;
+    }
 
-<title>Spotify Lyrics</title>
-<meta charset="UTF-8">
-
-<script>
-var access_token;
-var refresh_token;
-var current_song = "";
-var current_lyrics;
-var scroll_time = 0;
-var old_interval = 0;
-var next_lyrics;
-var queued_checks = 1;
-var latest_spotify_request = new Date(new Date().getTime() - 5000);
-
-function setText(id, text){
-  document.getElementById(id).innerHtml = text;
-  document.getElementById(id).textContent = text;
-}
-
-function showLoader(){
-  document.getElementById("text2").style.display = "none";
-  document.getElementById("loader").style.display = "block";
-}
-function hideLoader(){
-  document.getElementById("loader").style.display = "none";
-  document.getElementById("text2").style.display = "block";
-}
+    function showLoader(){
+      document.getElementById("text2").style.display = "none";
+      document.getElementById("loader").style.display = "block";
+    }
+    function hideLoader(){
+      document.getElementById("loader").style.display = "none";
+      document.getElementById("text2").style.display = "block";
+    }
 
   function UserAction() {
       window.location.replace("/lyrics/login");
@@ -64,14 +55,13 @@ function hideLoader(){
     var five_seconds_ago = new Date(new Date().getTime() - 5000);
     queued_checks -= 1;
     if (latest_spotify_request > five_seconds_ago){
-        if (queued_checks == 0){
-            setTimeout(weakSetSong, 5000);
-            queued_checks += 1;
-        } else {
-        }
-        return;
+      if (queued_checks == 0){
+        setTimeout(weakSetSong, 5000);
+        queued_checks += 1;
+      }
+      return;
     } else {
-        return setSong();
+      return setSong();
     }
   }
 
@@ -168,40 +158,36 @@ function hideLoader(){
           console.log(res)
           updateTokens();
       }
-    });
-  }
-</script>
+  </script>
+{% endblock %}
 
-</head>
-<body background="/public/blue.jpeg">
-<nav class="nav" style="position:fixed">
-  <h1 id='maintext' style="font-family:verdana; font-size:100%; color:white;">Spotify Lyrics</h1>
-  <div><label><input id='autoscroll' onclick="autoScroll()" type="checkbox">Auto-scroll</label></div>
-  <button class='button' id="refreshbtn" type="submit" onclick="setSong()"style="vertical-align:middle"><span>Refresh </span></button>
-</nav>
+{% block body %}
+  {{ super() }}
+  <nav class="nav" style="position:fixed">
+    <h1 id='maintext' style="font-family:verdana; font-size:100%; color:white;">Spotify Lyrics</h1>
+    <button class='button' id="refreshbtn" type="submit" onclick="setSong()"style="vertical-align:middle"><span>Refresh </span></button>
+  </nav>
 
-<article class="article">
-  <div id="loader"></div>
-  <p id='text2' style="font-family:verdana; font-size:300%; text-align:center; color:white;" class="animate-bottom"></p>
-  <button class='button' id="loginbtn" type="submit" onclick="UserAction()" style="vertical-align:middle"><span>Login </span></button>
-</article>
+  <article class="article">
+    <div id="loader"></div>
+    <p id='text2' style="font-family:verdana; font-size:300%; text-align:center; color:white;" class="animate-bottom"></p>
+    <button class='button' id="loginbtn" type="submit" onclick="UserAction()" style="vertical-align:middle"><span>Login </span></button>
+  </article>
 
-<script>
-  var url = new URL(window.location.href);
-  if (url.searchParams.get('access_token')) {
-    var loginbtn = document.getElementById('loginbtn');
-    loginbtn.parentNode.removeChild(loginbtn);
-    access_token = url.searchParams.get('access_token');
-    refresh_token = url.searchParams.get('refresh_token');
-    console.log('Spotify tokens read.');
-    setSong(access_token)
-  } else {
-    var refreshbtn = document.getElementById('refreshbtn');
-    refreshbtn.parentNode.removeChild(refreshbtn);
-    setText('text2', "Press login to start.")
-  }
+  <script>
+    var url = new URL(window.location.href);
+    if (url.searchParams.get('access_token')) {
+      var loginbtn = document.getElementById('loginbtn');
+      loginbtn.parentNode.removeChild(loginbtn);
+      access_token = url.searchParams.get('access_token');
+      refresh_token = url.searchParams.get('refresh_token');
+      console.log('Spotify tokens read.');
+      setSong(access_token)
+    } else {
+      var refreshbtn = document.getElementById('refreshbtn');
+      refreshbtn.parentNode.removeChild(refreshbtn);
+      setText('text2', "Press login to start.")
+    }
 
-</script>
-
-</body>
-</html>
+  </script>
+{% endblock %}

@@ -1,21 +1,12 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-  <link rel="stylesheet" type="text/css" href="/styles/default.css" />
-  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
-  <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
-  <title>Big Musicjerk's Big Album List</title>
-</head>
-
-<body>
-
+{% extends "base.html" %}
+{% set active_page = "albums" %}
+{% block title %}Big Musicjerk's Big Album List{% endblock %}
+{% block body %}
+  {{ super() }}
   <h1>Albums That Have Been Rated</h1>
     <ol id="album_list">
     {% for album in albums %}
       <li><a href="/albums/{{ album.url }}">{{ album.title }} by {{ album.artist }}</a></li>
     {% endfor %}
     </ul>
-
-</body>
-</html>
+{% endblock %}

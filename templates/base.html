@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    {% block head %}
+      <link rel="stylesheet" type="text/css" href="/styles/default.css" />
+        <link href="https://fonts.googleapis.com/css?family=Montserrat|Open+Sans" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+      <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+      <title>{% block title %}{% endblock %}</title>
+    {% endblock %}
+  </head>
+  <meta charset="UTF-8">
+
+  <body>
+    {% block body %}
+      <div class="header">
+        <h1 class="head-text">BIG Musicjerk</h1>
+      </div>
+        <div class="topnav">
+          <a {% if active_page == "home" %} class="active"{% endif %} href="/">Home</a>
+          <a {% if active_page == "albums" %} class="active"{% endif %} href="/albums">Albums</a>
+          <a {% if active_page == "lyrics" %} class="active"{% endif %} href="/lyrics">Lyrics</a>
+          <a {% if active_page == "login" %} class="active"{% endif %} href="/login">Login</a>
+        <div style='float:right;' class="search-div">
+          <input class="search-input" type="text" placeholder="Search...">
+          <button class="search-button" type="submit">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </div>
+    {% endblock%}
+  </body>
+</html>
