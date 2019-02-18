@@ -9,11 +9,12 @@ def make_url(album, artist):
 
 class Album:
     def __init__(self, title = None, artist = None, chosen_by = None,
-                 rating = None, best_tracks = None, worst_tracks = None):
+                 rating = None, best_tracks = None, worst_tracks = None, debug = False):
         self.title = title
         self.artist = artist
         self.mutex = Lock()
         self.update_values(chosen_by, rating, best_tracks, worst_tracks)
+        self.debug = debug
         self._spotify_id = None
         self._image_url  = None
         self._summary    = None
@@ -22,7 +23,8 @@ class Album:
 
     def update_api_values(self):
         if self.title is not None and self.artist is not None:
-            print("Fetching info about %s - %s..." % (str(self.artist), str(self.title)))
+            if not self.debug:
+                print("Fetching info about %s - %s..." % (str(self.artist), str(self.title)))
             spotify_id, image_url = get_spotify_data(self.title, self.artist)
             if image_url is None:
                 summary, image_url = get_wiki_info(self.title, self.artist)
@@ -34,7 +36,8 @@ class Album:
                 self._summary    = summary
 
     def update_slow_api_values(self):
-        print("Fetching slow info about %s - %s..." % (str(self.artist), str(self.title)))
+        if not self.debug:
+            print("Fetching slow info about %s - %s..." % (str(self.artist), str(self.title)))
         genres, styles = get_genres(self.title, self.artist)
         with self.mutex:
             self._genres = genres if genres else []

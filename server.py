@@ -1,8 +1,8 @@
 import requests, base64, lyricsgenius, json
-import sys, os, subprocess, re
+import sys, os, re, subprocess
 from urllib.parse import urlencode, quote_plus
 from collections import OrderedDict
-from flask import Flask, render_template, send_from_directory, request, redirect, jsonify
+from flask import Flask, render_template, send_from_directory, request, redirect, jsonify, make_response
 from itertools import zip_longest
 from reader import Reader
 from werkzeug.serving import run_simple
@@ -17,7 +17,10 @@ def pairwise(t):
 if not os.path.exists('cache'):
     os.makedirs('cache')
 
-debug = False
+fullchain = '/etc/letsencrypt/live/bigmusicjerk.com/fullchain.pem'
+privkey   = '/etc/letsencrypt/live/bigmusicjerk.com/privkey.pem'
+debug = not (os.path.exists(fullchain) and os.path.exists(privkey))
+
 if len(sys.argv) > 1:
     if sys.argv[1] == "--debug":
         debug = True
@@ -25,7 +28,7 @@ if len(sys.argv) > 1:
 with open('spotify_secret.json', 'r') as f:
     data = json.load(f)
 
-reader = Reader()
+reader = Reader(debug)
 session = requests.Session()
 client_id = data['second_id']
 client_secret = data['second_secret']
@@ -40,9 +43,13 @@ def page_not_found(err = None):
 
 @app.route('/')
 def main_page():
-    return render_template('homepage.html', members = reader.people.keys(),
-                           albums = pairwise(reader.albums[::-1]),
-                           albumtitles = [album.title for album in reader.albums])
+    resp = make_response(render_template(
+        'homepage.html', members = reader.people.keys(),
+        albums = pairwise(reader.albums[::-1]),
+        albumtitles = [album.title for album in reader.albums]
+    ))
+    resp.set_cookie('test', 'test-cookie')
+    return resp
 
 @app.route('/styles/<filename>')
 def style(filename):
@@ -54,6 +61,7 @@ def data(filename):
 
 @app.route('/albums/')
 def albums():
+    print(request.cookies.get('test'))
     return render_template('albums.html', albums = reader.albums)
 
 @app.route('/albums/<albumname>/')
@@ -160,11 +168,9 @@ def user(username):
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    fullchain = '/etc/letsencrypt/live/bigmusicjerk.com/fullchain.pem'
-    privkey   = '/etc/letsencrypt/live/bigmusicjerk.com/privkey.pem'
-    if os.path.exists(fullchain) and os.path.exists(privkey):
-        print('Running in server mode! (DEBUG == off)')
-        run_simple('0.0.0.0', PORT, app, use_reloader = True, ssl_context = (fullchain, privkey))
-    else:
+    if debug:
         print('Running in debug mode! (http://localhost:8000/)')
         app.run('localhost', PORT, debug = True)
+    else:
+        print('Running in server mode! (DEBUG == off)')
+        run_simple('0.0.0.0', PORT, app, use_reloader = True, ssl_context = (fullchain, privkey))

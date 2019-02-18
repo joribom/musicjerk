@@ -36,7 +36,7 @@ class Reader:
     scope = ['https://spreadsheets.google.com/feeds',
              'https://www.googleapis.com/auth/drive']
 
-    def __init__(self):
+    def __init__(self, debug = False):
         self.reconnect()
         # Find a workbook by name and open the first sheet
         # Make sure you use the right name here.
@@ -47,6 +47,7 @@ class Reader:
         self.latest_update = None
         self.mutex    = Lock()
         self.updating = Lock()
+        self.debug = debug
         self.update_values()
 
     def user_exists(self, username):
@@ -85,7 +86,6 @@ class Reader:
         if datetime.now(tzlocal()) - self.latest_update_check < timedelta(seconds = 5):
             return False
         latest_change_time = parse_time(self.sheet.cell(1, 1).value)
-        print(self.sheet.cell(1, 1).value)
         self.latest_update_check = datetime.now(tzlocal())
         if self.latest_update < latest_change_time:
             print("Update required...")
@@ -123,7 +123,7 @@ class Reader:
                 new_albums.append(self._album_dict[url])
                 new_albums[-1].update_values(chosen_by, average, best_tracks, worst_tracks)
             else:
-                new_albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks))
+                new_albums.append(Album(album, artist, chosen_by, average, best_tracks, worst_tracks, self.debug))
             new_album_dict[url] = new_albums[-1]
             name = ""
             for col, value in enumerate(row[7:]):
