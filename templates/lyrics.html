@@ -21,6 +21,8 @@ var access_token;
 var refresh_token;
 var current_song = "";
 var current_lyrics;
+var scroll_time = 0;
+var old_interval = 0;
 var next_lyrics;
 var queued_checks = 1;
 var latest_spotify_request = new Date(new Date().getTime() - 5000);
@@ -45,8 +47,8 @@ function hideLoader(){
   function GetLyrics(songname, artist, id) {
     $.getJSON('/lyrics/request', data = {
         song: '"' + songname + '"',
-        artist: artist, 
-        id: id}, 
+        artist: artist,
+        id: id},
       function(data) {
         var lyrics = data;
         setText('text2', lyrics);
@@ -76,6 +78,23 @@ function hideLoader(){
       });
   }
 
+    function autoScroll(){
+        scroll(current_song);
+    }
+
+    function scroll(song){
+      if (song != current_song || !document.getElementById('autoscroll').checked){
+        return;
+      }
+      window.scrollBy(0, 1);
+    }
+
+    function startScroll(song, total_duration){
+        clearInterval(old_interval);
+        scroll_time = (total_duration) / (document.body.scrollHeight - document.documentElement.clientHeight / 4);
+        old_interval = setInterval(scroll, scroll_time, song);
+    }
+
   function setSong() {
     latest_spotify_request = new Date()
     jQuery.ajax({
@@ -101,11 +120,13 @@ function hideLoader(){
                     '\nby ' + artist +
                     '\nAlbum: ' + album;
           setText('maintext', txt);
+          setTimeout(startScroll, 15000, id, res.item.duration_ms);
           GetLyrics(songname, artist, id);
           setTimeout(setSong, res.item.duration_ms - res.progress_ms + 1000);
       },
       error: function(res) {
-          console.log("Got exception while trying to poll spotify song!")
+          console.log("Got exception while trying to poll spotify song!");
+          console.log(res)
           updateTokens();
       }
     });
@@ -116,6 +137,7 @@ function hideLoader(){
 <body background="/public/blue.jpeg">
 <nav class="nav" style="position:fixed">
   <h1 id='maintext' style="font-family:verdana; font-size:100%; color:white;">Spotify Lyrics</h1>
+  <div><label><input id='autoscroll' onclick="autoScroll()" type="checkbox">Auto-scroll</label></div>
   <button class='button' id="refreshbtn" type="submit" onclick="setSong()"style="vertical-align:middle"><span>Refresh </span></button>
 </nav>
 
