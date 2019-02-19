@@ -70,7 +70,7 @@ def lyrics_request():
     song = request.args.get('song')
     artist = request.args.get('artist')
     id = request.args.get('id')
-    song = re.sub(r'\s?- [^-]*[Rr]emastered[^-]*$', '', song)
+    song = re.sub(r'\s?[-/] [^-/]*?[Rr]emastered[^-/]*$', '', song)
     cache = request.args.get('cache', 'no')
     filename = 'cache/%s.json' % id
     if not os.path.isfile(filename):
