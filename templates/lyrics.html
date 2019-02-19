@@ -83,7 +83,10 @@ function hideLoader(){
   }
 
     function autoScroll(){
-        scroll(current_song);
+      if (!document.getElementById('autoscroll').checked)	
+        clearInterval(old_interval);
+      else
+        old_interval = setInterval(scroll, scroll_time, current_song);
     }
 
     function scroll(song){
@@ -95,8 +98,11 @@ function hideLoader(){
 
     function startScroll(song, total_duration){
         clearInterval(old_interval);
-        scroll_time = (total_duration) / (document.body.scrollHeight - document.documentElement.clientHeight / 4);
-        old_interval = setInterval(scroll, scroll_time, song);
+        scroll_time = (total_duration) / (document.body.scrollHeight);
+	setTimeout(function () {
+          old_interval = setInterval(scroll, scroll_time, song);
+	}, scroll_time * (document.documentElement.clientHeight / 2 / document.body.scrollHeight) - 10000)
+        
     }
 
   function cacheNextSong(album_id, track_number){
@@ -152,8 +158,8 @@ function hideLoader(){
                     '\nby ' + artist +
                     '\nAlbum: ' + album;
           setText('maintext', txt);
-          setTimeout(startScroll, 15000, id, res.item.duration_ms);
           GetLyrics(songname, artist, id, cache = 'no');
+          setTimeout(startScroll, 10000, id, res.item.duration_ms);
           cacheNextSong(album_id, track_index);
           setTimeout(setSong, res.item.duration_ms - res.progress_ms + 1000);
       },
