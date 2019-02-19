@@ -1,5 +1,5 @@
 import requests, base64, lyricsgenius, json
-import sys, os, subprocess
+import sys, os, subprocess, re
 from urllib.parse import urlencode, quote_plus
 from collections import OrderedDict
 from flask import Flask, render_template, send_from_directory, request, redirect, jsonify
@@ -70,6 +70,7 @@ def lyrics_request():
     song = request.args.get('song')
     artist = request.args.get('artist')
     id = request.args.get('id')
+    song = re.sub(r'\s?- [^-]*[Rr]emastered[^-]*$', '', song)
     cache = request.args.get('cache', 'no')
     filename = 'cache/%s.json' % id
     if not os.path.isfile(filename):
