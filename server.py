@@ -70,6 +70,7 @@ def lyrics_request():
     song = request.args.get('song')
     artist = request.args.get('artist')
     id = request.args.get('id')
+    cache = request.args.get('cache', 'no')
     filename = 'cache/%s.json' % id
     if not os.path.isfile(filename):
         song = genius.search_song(song, artist)
@@ -79,6 +80,9 @@ def lyrics_request():
             lyrics = song.lyrics
         with open(filename, 'w') as f:
             f.write(json.dumps(lyrics))
+    if cache == 'yes':
+        print('Cached song %s for future use.' % (id + ".json"))
+        return jsonify('Song has been cached.')
     print("Sending json file %s" % (id + ".json"))
     return send_from_directory('cache', filename = id + ".json")
 
@@ -163,4 +167,3 @@ if __name__ == '__main__':
     else:
         print('Running in debug mode! (http://localhost:8000/)')
         app.run('localhost', PORT, debug = True)
-

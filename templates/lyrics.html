@@ -44,12 +44,15 @@ function hideLoader(){
   function UserAction() {
       window.location.replace("/lyrics/login");
   }
-  function GetLyrics(songname, artist, id) {
+
+  function GetLyrics(songname, artist, id, cache) {
     $.getJSON('/lyrics/request', data = {
         song: '"' + songname + '"',
         artist: artist,
         id: id},
       function(data) {
+        if (cache == "yes")
+          return;
         var lyrics = data;
         setText('text2', lyrics);
         hideLoader();
@@ -95,6 +98,32 @@ function hideLoader(){
         old_interval = setInterval(scroll, scroll_time, song);
     }
 
+  function cacheNextSong(album_id, track_number){
+    jQuery.ajax({
+      url: 'https://api.spotify.com/v1/albums/' + album_id + '/tracks',
+      type: 'GET',
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader("Authorization", "Bearer " + access_token);
+      },
+      data: {
+        offset: track_number,
+        limit: "1"},
+      success: function(res) {
+        if (res.items.length == 0)
+          return;
+        var songname = res.items[0].name;
+        var artist = res.items[0].artists[0].name;
+        var id = res.items[0].id
+        GetLyrics(songname, artist, id, cache = "yes");
+    },
+    error: function(res) {
+        console.log("Got exception while trying to poll spotify song!");
+        console.log(res)
+        updateTokens();
+    }
+    });
+  }
+
   function setSong() {
     latest_spotify_request = new Date()
     jQuery.ajax({
@@ -110,6 +139,8 @@ function hideLoader(){
           var artist = res.item.artists[0].name;
           var album = res.item.album.name;
           var id = res.item.id
+          var album_id = res.item.album.id;
+          var track_index = res.item.track_number;
           if (id == current_song){
             return;
           }
@@ -121,7 +152,8 @@ function hideLoader(){
                     '\nAlbum: ' + album;
           setText('maintext', txt);
           setTimeout(startScroll, 15000, id, res.item.duration_ms);
-          GetLyrics(songname, artist, id);
+          GetLyrics(songname, artist, id, cache = 'no');
+          cacheNextSong(album_id, track_index);
           setTimeout(setSong, res.item.duration_ms - res.progress_ms + 1000);
       },
       error: function(res) {
