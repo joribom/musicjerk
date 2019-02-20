@@ -90,11 +90,12 @@
     }
 
     function startScroll(song, total_duration){
+      var sleep_time = total_duration * (document.documentElement.clientHeight / 3 / document.body.scrollHeight) - 10000;
       clearInterval(old_interval);
-      scroll_time = (total_duration) / (document.body.scrollHeight);
+      scroll_time = (total_duration - sleep_time) / (document.body.scrollHeight);
 	  setTimeout(function () {
         old_interval = setInterval(scroll, scroll_time, song);
-      }, scroll_time * (document.documentElement.clientHeight / 2 / document.body.scrollHeight) - 5000)
+    }, sleep_time)
     }
 
     function cacheNextSong(album_id, track_number){
