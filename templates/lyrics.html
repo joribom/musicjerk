@@ -16,6 +16,8 @@
     var current_lyrics;
     var next_lyrics;
     var queued_checks = 1;
+    var old_interval = 0;
+    var scroll_time = 0;
     var latest_spotify_request = new Date(new Date().getTime() - 5000);
 
     function setText(id, text){
@@ -27,17 +29,18 @@
       document.getElementById("text2").style.display = "none";
       document.getElementById("loader").style.display = "block";
     }
+
     function hideLoader(){
       document.getElementById("loader").style.display = "none";
       document.getElementById("text2").style.display = "block";
     }
 
-  function UserAction() {
+    function UserAction() {
       window.location.replace("/lyrics/login");
-  }
+    }
 
-  function GetLyrics(songname, artist, id, cache) {
-    $.getJSON('/lyrics/request', data = {
+    function GetLyrics(songname, artist, id, cache) {
+      $.getJSON('/lyrics/request', data = {
         song: '"' + songname + '"',
         artist: artist,
         id: id,
@@ -48,32 +51,32 @@
         var lyrics = data;
         setText('text2', lyrics);
         hideLoader();
-    });
-  }
-
-  function weakSetSong(){
-    var five_seconds_ago = new Date(new Date().getTime() - 5000);
-    queued_checks -= 1;
-    if (latest_spotify_request > five_seconds_ago){
-      if (queued_checks == 0){
-        setTimeout(weakSetSong, 5000);
-        queued_checks += 1;
-      }
-      return;
-    } else {
-      return setSong();
+      });
     }
-  }
 
-  function updateTokens(){
+    function weakSetSong(){
+      var five_seconds_ago = new Date(new Date().getTime() - 5000);
+      queued_checks -= 1;
+      if (latest_spotify_request > five_seconds_ago){
+        if (queued_checks == 0){
+          setTimeout(weakSetSong, 5000);
+          queued_checks += 1;
+        }
+        return;
+      } else {
+        return setSong();
+      }
+    }
+
+    function updateTokens(){
       $.getJSON('/lyrics/refresh_token?token=' + refresh_token, function(data) {
           access_token = data;
           weakSetSong()
       });
-  }
+    }
 
     function autoScroll(){
-      if (!document.getElementById('autoscroll').checked)	
+      if (!document.getElementById('autoscroll').checked)
         clearInterval(old_interval);
       else
         old_interval = setInterval(scroll, scroll_time, current_song);
@@ -87,50 +90,51 @@
     }
 
     function startScroll(song, total_duration){
-        clearInterval(old_interval);
-        scroll_time = (total_duration) / (document.body.scrollHeight);
-	setTimeout(function () {
-          old_interval = setInterval(scroll, scroll_time, song);
-	}, scroll_time * (document.documentElement.clientHeight / 2 / document.body.scrollHeight) - 10000)
-        
+      clearInterval(old_interval);
+      scroll_time = (total_duration) / (document.body.scrollHeight);
+	  setTimeout(function () {
+        old_interval = setInterval(scroll, scroll_time, song);
+      }, scroll_time * (document.documentElement.clientHeight / 2 / document.body.scrollHeight) - 5000)
     }
 
-  function cacheNextSong(album_id, track_number){
-    jQuery.ajax({
-      url: 'https://api.spotify.com/v1/albums/' + album_id + '/tracks',
-      type: 'GET',
-      beforeSend: function(xhr) {
-        xhr.setRequestHeader("Authorization", "Bearer " + access_token);
-      },
-      data: {
-        offset: track_number,
-        limit: "1"},
-      success: function(res) {
-        if (res.items.length == 0)
-          return;
-        var songname = res.items[0].name;
-        var artist = res.items[0].artists[0].name;
-        var id = res.items[0].id
-        GetLyrics(songname, artist, id, cache = "yes");
-    },
-    error: function(res) {
-        console.log("Got exception while trying to poll spotify song!");
-        console.log(res)
-        updateTokens();
-    }
-    });
-  }
-
-  function setSong() {
-    latest_spotify_request = new Date()
-    jQuery.ajax({
-      url: 'https://api.spotify.com/v1/me/player/currently-playing',
-      type: 'GET',
-      beforeSend: function(xhr) {
+    function cacheNextSong(album_id, track_number){
+      jQuery.ajax({
+        url: 'https://api.spotify.com/v1/albums/' + album_id + '/tracks',
+        type: 'GET',
+        beforeSend: function(xhr) {
           xhr.setRequestHeader("Authorization", "Bearer " + access_token);
-      },
-      success: function(res) {
+        },
+        data: {
+          offset: track_number,
+          limit: "1"},
+        success: function(res) {
+          if (res.items.length == 0)
+            return;
+          var songname = res.items[0].name;
+          var artist = res.items[0].artists[0].name;
+          var id = res.items[0].id
+          GetLyrics(songname, artist, id, cache = "yes");
+        },
+        error: function(res) {
+          console.log("Got exception while trying to poll spotify song!");
+          console.log(res)
+          updateTokens();
+        }
+      });
+    }
+
+    function setSong() {
+      latest_spotify_request = new Date()
+      jQuery.ajax({
+        url: 'https://api.spotify.com/v1/me/player/currently-playing',
+        type: 'GET',
+        beforeSend: function(xhr) {
+          xhr.setRequestHeader("Authorization", "Bearer " + access_token);
+        },
+        success: function(res) {
           setTimeout(weakSetSong, 5000);
+          if (res == null)
+            return;
           queued_checks += 1;
           var songname = res.item.name;
           var artist = res.item.artists[0].name;
@@ -152,19 +156,22 @@
           setTimeout(startScroll, 10000, id, res.item.duration_ms);
           cacheNextSong(album_id, track_index);
           setTimeout(setSong, res.item.duration_ms - res.progress_ms + 1000);
-      },
-      error: function(res) {
+        },
+        error: function(res) {
           console.log("Got exception while trying to poll spotify song!");
           console.log(res)
           updateTokens();
-      }
+        }
+      });
+    }
   </script>
-{% endblock %}
+{% endblock head %}
 
 {% block body %}
   {{ super() }}
   <nav class="nav" style="position:fixed">
     <h1 id='maintext' style="font-family:verdana; font-size:100%; color:white;">Spotify Lyrics</h1>
+    <div><label><input id='autoscroll' onclick="autoScroll()" type="checkbox">Auto-scroll</label></div>
     <button class='button' id="refreshbtn" type="submit" onclick="setSong()"style="vertical-align:middle"><span>Refresh </span></button>
   </nav>
 
@@ -190,4 +197,4 @@
     }
 
   </script>
-{% endblock %}
+{% endblock body %}
