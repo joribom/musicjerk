@@ -38,6 +38,14 @@ spotify_authorize = 'Basic ' + str(base64.b64encode((client_id + ':' + client_se
 genius = lyricsgenius.Genius(genius_token)
 app = Flask(__name__, template_folder = 'templates')
 
+if not debug:
+    @app.before_request
+    def before_request():
+        if request.url.startswith('http://'):
+            url = request.url.replace('http://', 'https://', 1)
+            code = 301
+            return redirect(url, code=code)
+
 @app.errorhandler(KeyError)
 def page_not_found(err = None):
   return render_template('404.html'), 404
