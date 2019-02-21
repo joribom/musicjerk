@@ -52,8 +52,7 @@ def page_not_found(err = None):
 
 @app.route('/')
 def main_page():
-    print(request.cookies.get('uid'))
-    print(request.cookies.get('session'))
+    print(request.cookies)
     resp = make_response(render_template(
         'homepage.html', members = reader.people.keys(),
         albums = pairwise(reader.albums[::-1]),
@@ -133,6 +132,8 @@ def lyrics_refresh_token():
 @app.route('/lyrics/callback')
 def lyrics_callback():
     code = request.args.get('code')
+    uid = request.cookies.get('uid')
+    session_hash = request.cookies.get('session')
     redirect_uri = request.host_url + 'lyrics/callback'
     result = session.post(url = 'https://accounts.spotify.com/api/token',
         data = {
@@ -143,9 +144,20 @@ def lyrics_callback():
         'Authorization' : spotify_authorize
         }).json()
 
-    acc, refr = result['access_token'], result['refresh_token']
-    tokens = urlencode(OrderedDict(access_token = acc, refresh_token = refr))
-    return redirect(request.base_url.replace('/callback', '?') + tokens)
+    access_token, refresh_token = result['access_token'], result['refresh_token']
+    print("Testing...")
+    if db.verify_login(uid, session_hash):
+        print("Verified login!")
+        db.set_tokens(uid, access_token, refresh_token)
+        response = make_response(redirect('/lyrics/'))
+        response.set_cookie('spotify_access', access_token)
+        response.set_cookie('spotify_refresh', refresh_token)
+        return response
+    else:
+        print("Login not verified!")
+        tokens = urlencode(OrderedDict(access_token = access_token,
+                                       refresh_token = refresh_token))
+        return redirect('/lyrics/'.replace('/callback', '?') + tokens)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
