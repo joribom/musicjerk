@@ -19,11 +19,11 @@
     }
   </script>
 {% endblock %}
-{% block title %}Account Page for {{ name.title() }}.{% endblock %}
+{% block title %}Account Page for {{ username.title() }}.{% endblock %}
 <body>
 {% block body %}
   {{ super() }}
-  <h1>Account Page for {{ name.title() }}.</h1>
+  <h1>Account Page for {{ username.title() }}.</h1>
   <form name="pwForm" action="/update_password" onsubmit="return validateForm()" method="post">
   {% if error is not none %}
     <div class="container">

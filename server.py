@@ -59,11 +59,13 @@ app = Flask(__name__, template_folder = 'templates')
 def verify_cookie():
     uid = request.cookies.get('uid')
     session_hash = request.cookies.get('session')
+    if uid is None or session_hash is None:
+        return False
     return db.verify_login(uid, session_hash)
 
 def get_name():
-    uid = request.cookies.get('uid')
-    return db.get_name(uid);
+    uid = request.cookies.get('uid', None)
+    return db.get_name(uid) if uid is not None else None
 
 def render_template_wrapper(*args, **kwargs):
     kwargs['username'] = get_name() if verify_cookie() else None
@@ -229,8 +231,6 @@ def login():
 
 @app.route('/logout')
 def logout():
-    if not verify_cookie():
-        return page_not_found()
     response = make_response(redirect('/'))
     for key in request.cookies:
         response.set_cookie(key, '', expires = 0)
