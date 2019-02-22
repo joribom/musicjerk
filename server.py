@@ -38,6 +38,28 @@ spotify_authorize = 'Basic ' + str(base64.b64encode((client_id + ':' + client_se
 genius = lyricsgenius.Genius(genius_token)
 app = Flask(__name__, template_folder = 'templates')
 
+def verify_cookie():
+    uid = request.cookies.get('uid')
+    session_hash = request.cookies.get('session')
+    return db.verify_login(uid, session_hash)
+
+def get_name():
+    uid = request.cookies.get('uid')
+    return db.get_name(uid);
+
+def render_template_wrapper(*args, **kwargs):
+    kwargs['name'] = get_name() if verify_cookie() else None
+    return render_template(*args, **kwargs)
+
+def set_cookies(response, username):
+    uid, session_hash = db.login(username)
+    response.set_cookie('uid', str(uid))
+    response.set_cookie('session', session_hash)
+    res = db.get_tokens(uid)
+    for key, token in zip(('spotify_access', 'spotify_refresh'), res):
+        if token is not None:
+            response.set_cookie(key, token)
+
 if not debug:
     @app.before_request
     def before_request():
@@ -48,12 +70,12 @@ if not debug:
 
 @app.errorhandler(KeyError)
 def page_not_found(err = None):
-  return render_template('404.html'), 404
+  return render_template_wrapper('404.html'), 404
 
 @app.route('/')
 def main_page():
     print(request.cookies)
-    resp = make_response(render_template(
+    resp = make_response(render_template_wrapper(
         'homepage.html', members = reader.people.keys(),
         albums = pairwise(reader.albums[::-1]),
         albumtitles = [album.title for album in reader.albums]
@@ -70,16 +92,16 @@ def data(filename):
 
 @app.route('/albums/')
 def albums():
-    return render_template('albums.html', albums = reader.albums)
+    return render_template_wrapper('albums.html', albums = reader.albums)
 
 @app.route('/albums/<albumname>/')
 def album(albumname):
     album = reader.album_dict[albumname.lower()]
-    return render_template('album.html', album = album)
+    return render_template_wrapper('album.html', album = album)
 
 @app.route('/lyrics/')
 def lyrics():
-    return render_template('lyrics.html')
+    return render_template_wrapper('lyrics.html')
 
 @app.route('/lyrics/request')
 def lyrics_request():
@@ -145,19 +167,16 @@ def lyrics_callback():
         }).json()
 
     access_token, refresh_token = result['access_token'], result['refresh_token']
-    print("Testing...")
     if db.verify_login(uid, session_hash):
-        print("Verified login!")
         db.set_tokens(uid, access_token, refresh_token)
         response = make_response(redirect('/lyrics/'))
         response.set_cookie('spotify_access', access_token)
         response.set_cookie('spotify_refresh', refresh_token)
         return response
     else:
-        print("Login not verified!")
         tokens = urlencode(OrderedDict(access_token = access_token,
                                        refresh_token = refresh_token))
-        return redirect('/lyrics/'.replace('/callback', '?') + tokens)
+        return redirect('/lyrics?' + tokens)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -166,16 +185,20 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         if db.check_password(username, password):
-            uid, session_hash = db.login(username)
-            print(uid, session_hash)
             response = make_response(redirect('/'))
-            response.set_cookie('uid', str(uid))
-            response.set_cookie('session', session_hash)
+            set_cookies(response, username)
             return response
         else:
             error = "Invalid username/password!"
-    resp = make_response(render_template('login.html', error = error))
+    resp = make_response(render_template_wrapper('login.html', error = error))
     return resp
+
+@app.route('/logout')
+def logout():
+    response = make_response(redirect('/'))
+    for key in request.cookies:
+        response.set_cookie(key, '', expires = 0)
+    return response
 
 @app.route('/webhook', methods = ['POST'])
 def webhook():
@@ -201,7 +224,7 @@ def user(username):
     # FIXME: This line checks that user exists, should be done better
     if not reader.user_exists(username):
         return page_not_found()
-    return render_template('person.html', name = name,
+    return render_template_wrapper('person.html', name = name,
                            comparison_list = reader.get_likeness(name))
 
 if __name__ == '__main__':

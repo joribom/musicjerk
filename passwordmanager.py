@@ -40,9 +40,22 @@ def set_tokens(cur, uid, access_token, refresh_token):
     )
 
 @using_db
+def get_tokens(cur, uid):
+    cur.execute('SELECT access_token, refresh_token FROM spotify_tokens WHERE uid=%s', (uid,))
+    return cur.fetchone();
+
+@using_db
 def verify_login(cur, uid, session):
     cur.execute("SELECT session FROM users WHERE uid=%s;", (uid,))
-    return cur.fetchone()[0] == session
+    res = cur.fetchone()
+    return (res[0] == session) if res is not None else False
+
+@using_db
+def get_name(cur, uid):
+    cur.execute("SELECT name FROM users WHERE uid=%s;", (uid,))
+    res = cur.fetchone()
+    return res[0] if res is not None else None
+
 
 @using_db
 def add_password(cur, user, password):
