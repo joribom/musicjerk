@@ -87,7 +87,7 @@ function init(){
     .classed("average", true)
     .attr("x", 20)
     .attr("y", 20)
-    .text(function(){return "Average: " + d3.mean(rating_distribution, function(d){return d}).toFixed(2)})
+    .text(function(){return "Average: " + d3.mean({{ratings_list|safe}}, function(d){return d}).toFixed(2)})
     .attr("font-weight", 'bold')
     .style("fill", "darkOrange");
 
