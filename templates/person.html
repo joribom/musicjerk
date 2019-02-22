@@ -2,16 +2,22 @@
 <html lang="en">
 
 <head>
+  <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+  <script type="text/javascript" src="https://d3js.org/d3-axis.v1.min.js"></script>
+  <script type="text/javascript" src="https://d3js.org/d3-scale.v2.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/d3fc/build/d3fc.min.js"></script>
   <link rel="stylesheet" type="text/css" href="/styles/default.css" />
+  <link rel="stylesheet" type="text/css" href="../styles/person.css" />
   <link rel="icon" type="image/png" href="/data/favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="/data/favicon-16x16.png" sizes="16x16" />
   <title>Statistics for {{ name.title() }}</title>
 </head>
 <body>
   <h1> {{ name.title() + ("'s" if name[-1] != 's' else "'") }} ratings: </h1>
-  <figure>
+  <!-- <figure>
     <img src="/data/{{ name }}.png" alt="Ratings for {{ name.title() }}">
-  </figure>
+  </figure> -->
+  <div id="svgcontainer"></div>
 
    <h1>Comparison for {{ name.title() }}</h1>
 
@@ -22,3 +28,93 @@
     </ul>
 </body>
 </html>
+
+<script>
+var rating_distribution = get_distribution({{ratings_list|safe}})
+init()
+
+function get_distribution(input) {
+  var occurances = [0,0,0,0,0,0,0,0,0,0,0];
+  for(var i = 0; i < input.length; i++){
+    occurances[input[i]]++;
+  }
+  return occurances;
+}
+  
+function init(){
+  var svg = d3.select("#svgcontainer").append("svg").classed("graph",true).attr("height", 700).attr("width", 1000).attr("y", 0);
+  var padding = {top:20, right: 30, left:50, bottom: 30};
+
+  var chartArea = {
+    "width":parseInt(svg.style("width")) - padding.left - padding.right,
+    "height":parseInt(svg.style("height")) - padding.top - padding.bottom
+  };
+
+  var xScale = d3.scaleLinear()
+  .domain([0,1,2,3,4,5,6,7,8,9,10])
+  .range([0, chartArea.width/11, 2*chartArea.width/11, 3*chartArea.width/11, 4*chartArea.width/11, 5*chartArea.width/11, 6*chartArea.width/11, 7*chartArea.width/11, 8*chartArea.width/11, 9*chartArea.width/11, 10*chartArea.width/11, chartArea.width])
+
+  var yScale = d3.scaleLinear()
+    .domain([0, d3.max(rating_distribution, function(d){return d})])
+    .range([chartArea.height, 50])
+
+
+  
+  svg.append("g")
+    .classed("xAxis", true)
+    .attr('transform','translate(' + padding.left + ',' + (chartArea.height + padding.top)+')')
+    .call(d3.axisBottom(xScale));
+  svg.append("g")
+    .classed("yAxis", true)
+    .attr('transform','translate(' + padding.left + ','+ padding.top+')')
+    .call(d3.axisLeft(yScale));
+
+  var xind=0;
+  var yind=0;
+  svg.append("g")
+    .selectAll("rect")
+    .data(rating_distribution)
+    .enter().append("g").classed("gbar",true).append("rect")
+     .classed("bar", true)
+     .attr("x", function(){ var xval = xind*chartArea.width/11 +padding.left -17; xind++; return xval})
+     .attr("width", 34)
+     .attr("y", function(d) { return  chartArea.height + padding.top - (chartArea.height -50)*d/d3.max(rating_distribution, function(d){return d})})
+     .attr("height", function(d) { return (chartArea.height-50)*d/d3.max(rating_distribution, function(d){return d})})
+     .attr("onclick", function(){ var val = yind; yind++; return 'getPeople('+ val + ')';})
+     .text(function(d) { return d * 15});
+
+  svg.append("g").append("text")
+    .classed("average", true)
+    .attr("x", 20)
+    .attr("y", 20)
+    .text(function(){return "Average: " + d3.mean(rating_distribution, function(d){return d}).toFixed(2)})
+    .attr("font-weight", 'bold')
+    .style("fill", "darkOrange");
+
+  displayNumber()
+}
+
+function displayNumber(){
+  var xind = 0;
+
+  var svg = d3.select("svg");
+  var padding = {top:20, right: 30, left:50, bottom: 30};
+
+  var chartArea = {
+    "width":parseInt(svg.style("width")) - padding.left - padding.right,
+    "height":parseInt(svg.style("height")) - padding.top - padding.bottom
+  };
+  d3.selectAll(".gbar")
+    .append("text")
+    .classed("bartext", true)
+    .data(rating_distribution)
+    .attr("x", function(){ var xval = xind*chartArea.width/11 +padding.left ; xind++; return xval})
+    .attr("y", function(d) { return chartArea.height + padding.top - (chartArea.height-50)*d/d3.max(rating_distribution, function(d){return d}) - 15})
+    .text(function(d) { if(d != 0)return d; else return "";})
+    .attr("font-weight", 'bold')
+    .style('text-anchor', 'middle')
+    .style("fill", "darkOrange");;
+}
+
+console.log(rating_distribution)
+</script>

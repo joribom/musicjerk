@@ -171,3 +171,9 @@ class Reader:
         if person not in self.people:
             return []
         return self.people.get(person).likeness_list
+
+    @check_updates
+    def get_ratings(self, person):
+        if person not in self.people:
+            return []
+        return self.people.get(person).get_ratings()

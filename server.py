@@ -261,7 +261,7 @@ def user(username):
     if not reader.user_exists(username):
         return page_not_found()
     return render_template_wrapper('person.html', name = name,
-                           comparison_list = reader.get_likeness(name))
+                           comparison_list = reader.get_likeness(name), ratings_list = reader.get_ratings(name))
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
