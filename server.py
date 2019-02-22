@@ -68,9 +68,13 @@ if not debug:
             code = 301
             return redirect(url, code=code)
 
-@app.errorhandler(KeyError)
+@app.errorhandler(404)
 def page_not_found(err = None):
   return render_template_wrapper('404.html'), 404
+
+@app.errorhandler(KeyError)
+def _key_error(err = None):
+    return page_not_found(err)
 
 @app.route('/')
 def main_page():
@@ -96,7 +100,13 @@ def albums():
 
 @app.route('/account/')
 def account():
+    if not verify_cookie():
+        return page_not_found()
     return render_template_wrapper('account.html')
+
+@app.route('/update_password', methods=['POST'])
+def update_password():
+    pass
 
 @app.route('/albums/<albumname>/')
 def album(albumname):
@@ -194,11 +204,15 @@ def login():
             return response
         else:
             error = "Invalid username/password!"
+    elif verify_cookie():
+        return page_not_found()
     resp = make_response(render_template_wrapper('login.html', error = error))
     return resp
 
 @app.route('/logout')
 def logout():
+    if not verify_cookie():
+        return page_not_found()
     response = make_response(redirect('/'))
     for key in request.cookies:
         response.set_cookie(key, '', expires = 0)
