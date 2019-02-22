@@ -12,7 +12,7 @@ form {
   box-sizing: border-box;
 }
 
-/* Extra style for the cancel button (red) */
+/* Extra style for the cancel button (green) */
 .loginbtn {
   width: auto;
   padding: 10px 18px;
@@ -24,6 +24,7 @@ form {
   cursor: pointer;
 }
 
+/* Extra style for the cancel button (red) */
 .cancelbtn {
   width: auto;
   padding: 10px 18px;
