@@ -11,11 +11,12 @@ Server for "The Musicjerk Project" (patent pending)
 * ```spotipy``` - For accessing albums on spotify
 * ```lyricsgenius``` - For accessing lyrics from genius for the currently playing song
 * ```discogsclient``` - For getting album genres/styles
+* ```psycopg2``` - For database access in backend
 
 ## How to install
 * Install python3
 * Install pip3
-* Run the command ```pip3 install oauth2client gspread jinja2 matplotlib spotipy flask lyricsgenius discogsclient```
+* Run the command ```pip3 install oauth2client gspread jinja2 matplotlib spotipy flask lyricsgenius discogsclient psycopg2```
 
 ## How to run
 ```python3 server.py```
