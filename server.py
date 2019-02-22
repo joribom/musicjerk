@@ -6,9 +6,35 @@ from flask import Flask, render_template, send_from_directory, request, redirect
 from itertools import zip_longest
 from reader import Reader
 from werkzeug.serving import run_simple
-import passwordmanager as db
+import getopt
 
 PORT = 8000
+
+fullchain = '/etc/letsencrypt/live/bigmusicjerk.com/fullchain.pem'
+privkey   = '/etc/letsencrypt/live/bigmusicjerk.com/privkey.pem'
+debug = not (os.path.exists(fullchain) and os.path.exists(privkey))
+nodb = False
+
+try:
+    print(sys.argv)
+    opts, args = getopt.getopt(sys.argv[1:], "", ["debug", "nodb"])
+    print(opts)
+    for opt, arg in opts:
+        print('Currently: %s' % opt)
+        if opt == debug:
+            debug = True
+        elif opt == '--nodb':
+            nodb = True
+except getopt.GetoptError as err:
+    print(str(err))
+    sys.exit(2)
+
+if nodb:
+    print("Importing dummy passwordmanager...")
+    import dummypasswordmanager as db
+else:
+    import passwordmanager as db
+
 
 def pairwise(t):
     it = iter(t)
@@ -17,14 +43,6 @@ def pairwise(t):
 
 if not os.path.exists('cache'):
     os.makedirs('cache')
-
-fullchain = '/etc/letsencrypt/live/bigmusicjerk.com/fullchain.pem'
-privkey   = '/etc/letsencrypt/live/bigmusicjerk.com/privkey.pem'
-debug = not (os.path.exists(fullchain) and os.path.exists(privkey))
-
-if len(sys.argv) > 1:
-    if sys.argv[1] == "--debug":
-        debug = True
 
 with open('spotify_secret.json', 'r') as f:
     data = json.load(f)
