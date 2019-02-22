@@ -18,6 +18,7 @@
     var queued_checks = 1;
     var old_interval = 0;
     var scroll_time = 0;
+    var total_duration = 0;
     var latest_spotify_request = new Date(new Date().getTime() - 5000);
 
     function setText(id, text){
@@ -78,8 +79,11 @@
     function autoScroll(){
       if (!document.getElementById('autoscroll').checked)
         clearInterval(old_interval);
-      else
+      else{
+        var sleep_time = total_duration * (document.documentElement.clientHeight / 3 / document.body.scrollHeight) - 10000;
+        scroll_time = (total_duration - sleep_time) / (document.body.scrollHeight);
         old_interval = setInterval(scroll, scroll_time, current_song);
+      }
     }
 
     function scroll(song){
@@ -89,7 +93,7 @@
       window.scrollBy(0, 1);
     }
 
-    function startScroll(song, total_duration){
+    function startScroll(song){
       var sleep_time = total_duration * (document.documentElement.clientHeight / 3 / document.body.scrollHeight) - 10000;
       clearInterval(old_interval);
       scroll_time = (total_duration - sleep_time) / (document.body.scrollHeight);
@@ -154,6 +158,7 @@
                     '\nAlbum: ' + album;
           setText('maintext', txt);
           GetLyrics(songname, artist, id, cache = 'no');
+          total_duration = res.item.duration_ms;
           setTimeout(startScroll, 10000, id, res.item.duration_ms);
           cacheNextSong(album_id, track_index);
           setTimeout(setSong, res.item.duration_ms - res.progress_ms + 1000);
@@ -183,6 +188,22 @@
   </article>
 
   <script>
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
     var url = new URL(window.location.href);
     if (url.searchParams.get('access_token')) {
       var loginbtn = document.getElementById('loginbtn');
@@ -190,6 +211,13 @@
       access_token = url.searchParams.get('access_token');
       refresh_token = url.searchParams.get('refresh_token');
       console.log('Spotify tokens read.');
+      setSong(access_token)
+    } else if (getCookie('spotify_access') != "" || getCookie('spotify_refresh') != "") {
+      var loginbtn = document.getElementById('loginbtn');
+      loginbtn.parentNode.removeChild(loginbtn);
+      access_token = getCookie('spotify_access');
+      refresh_token = getCookie('spotify_refresh');
+      console.log('Spotify tokens read from cookie.');
       setSong(access_token)
     } else {
       var refreshbtn = document.getElementById('refreshbtn');
