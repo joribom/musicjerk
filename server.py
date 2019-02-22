@@ -16,11 +16,8 @@ debug = not (os.path.exists(fullchain) and os.path.exists(privkey))
 nodb = False
 
 try:
-    print(sys.argv)
     opts, args = getopt.getopt(sys.argv[1:], "", ["debug", "nodb"])
-    print(opts)
     for opt, arg in opts:
-        print('Currently: %s' % opt)
         if opt == debug:
             debug = True
         elif opt == '--nodb':
@@ -98,7 +95,6 @@ def _key_error(err = None):
 
 @app.route('/')
 def main_page():
-    print(request.cookies)
     resp = make_response(render_template_wrapper(
         'homepage.html', members = reader.people.keys(),
         albums = pairwise(reader.albums[::-1]),
