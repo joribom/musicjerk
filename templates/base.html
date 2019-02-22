@@ -18,18 +18,18 @@
       <div class="header">
         <h1 class="head-text">BIG Musicjerk{% if name is not none %} (Logged in as {{ name.title() }}){% endif %}</h1>
       </div>
-        <div class="topnav">
-          <a {% if active_page == "home" %} class="active"{% endif %} href="/">Home</a>
-          <a {% if active_page == "albums" %} class="active"{% endif %} href="/albums">Albums</a>
-          <a {% if active_page == "lyrics" %} class="active"{% endif %} href="/lyrics">Lyrics</a>
-          {% if name is none %}
-            <a {% if active_page == "login" %} class="active"{% endif %} href="/login">Login</a>
-          {% else %}
-            <a {% if active_page == "account" %} class="active"{% endif %} href="/account">Account</a>
-            <a href="/logout">Logout</a>
-          {% endif %}
+      <div class="topnav">
+        <a {% if active_page == "home" %} class="active"{% endif %} href="/">Home</a>
+        <a {% if active_page == "albums" %} class="active"{% endif %} href="/albums">Albums</a>
+        <a {% if active_page == "lyrics" %} class="active"{% endif %} href="/lyrics">Lyrics</a>
+        {% if name is none %}
+          <a {% if active_page == "login" %} class="active"{% endif %} href="/login">Login</a>
+        {% else %}
+          <a {% if active_page == "account" %} class="active"{% endif %} href="/account">Account</a>
+          <a href="/logout">Logout</a>
+        {% endif %}
         <div style='float:right;' class="search-div">
-          <input class="search-input" type="text" placeholder="Search...">
+          <input class="search-input" type="text" placeholder="Search..."/>
           <button class="search-button" type="submit">
             <i class="fa fa-search"></i>
           </button>
