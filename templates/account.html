@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set active_page = "account" %}
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css" href="/styles/account.css" />
+  <script>
+    function validateForm(){
+        console.log("In here!");
+        var new_pw_1 = document.forms["pwForm"]["new_password"].value;
+        var new_pw_2 = document.forms["pwForm"]["new_password_2"].value;
+        console.log(new_pw_1.length)
+        if (new_pw_1 != new_pw_2){
+            alert("New Passwords Don't Match!");
+            return false;
+        } else if (new_pw_1.length < 6){
+            alert("New Password Must Be At Least 6 Characters!");
+            return false;
+        }
+    }
+  </script>
+{% endblock %}
+{% block title %}Account Page for {{ name.title() }}.{% endblock %}
+<body>
+{% block body %}
+  {{ super() }}
+  <h1>Account Page for {{ name.title() }}.</h1>
+  <form name="pwForm" action="/update_password" onsubmit="return validateForm()" method="post">
+  {% if error is not none %}
+    <div class="container">
+     <label><b>{{ error }}</b></label>
+    </div>
+  {% endif %}
+  <div class="container">
+    <div class="container">
+      <label for="old_password"><b>Old Password</b></label>
+      <input class="logininput" type="password" placeholder="Enter Old Password" name="old_password" required>
+    </div>
+    <div class="container">
+      <label for="new_password"><b>New Password</b></label>
+      <input class="logininput" type="password" placeholder="Enter New Password" name="new_password" required>
+      <label for="new_password_2"><b>Re-Enter New Password</b></label>
+      <input class="logininput" type="password" placeholder="Enter New Password" name="new_password_2" required>
+    </div>
+    <div class="container">
+      <button class="loginbtn" type="submit" value="Submit">Update Password</button>
+    </div>
+  </div>
+{% endblock body %}
+</body>

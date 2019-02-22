@@ -94,6 +94,10 @@ def data(filename):
 def albums():
     return render_template_wrapper('albums.html', albums = reader.albums)
 
+@app.route('/account/')
+def account():
+    return render_template_wrapper('account.html')
+
 @app.route('/albums/<albumname>/')
 def album(albumname):
     album = reader.album_dict[albumname.lower()]
