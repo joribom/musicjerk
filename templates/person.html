@@ -1,22 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
+{% extends "base.html" %}
+{% block title %}Statistics for {{ name.title() }}{% endblock %}
+{% block head %}
+  {{ super() }}
   <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
   <script type="text/javascript" src="https://d3js.org/d3-axis.v1.min.js"></script>
   <script type="text/javascript" src="https://d3js.org/d3-scale.v2.min.js"></script>
   <script type="text/javascript" src="https://unpkg.com/d3fc/build/d3fc.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="/styles/default.css" />
-  <link rel="stylesheet" type="text/css" href="../styles/person.css" />
-  <link rel="icon" type="image/png" href="/data/favicon-32x32.png" sizes="32x32" />
-  <link rel="icon" type="image/png" href="/data/favicon-16x16.png" sizes="16x16" />
-  <title>Statistics for {{ name.title() }}</title>
-</head>
-<body>
+{% endblock %}
+{% block body %}
+  {{ super() }}
   <h1> {{ name.title() + ("'s" if name[-1] != 's' else "'") }} ratings: </h1>
-  <!-- <figure>
-    <img src="/data/{{ name }}.png" alt="Ratings for {{ name.title() }}">
-  </figure> -->
   <div id="svgcontainer"></div>
 
    <h1>Comparison for {{ name.title() }}</h1>
@@ -26,8 +19,6 @@
         <li><a href="/users/{{ name }}/">{{ name }}: </a><a>{{ likeness + ('%' if likeness != 'None' else '') }}</a></li>
     {% endfor %}
     </ul>
-</body>
-</html>
 
 <script>
 var rating_distribution = get_distribution({{ratings_list|safe}})
@@ -40,7 +31,7 @@ function get_distribution(input) {
   }
   return occurances;
 }
-  
+
 function init(){
   var svg = d3.select("#svgcontainer").append("svg").classed("graph",true).attr("height", 700).attr("width", 1000).attr("y", 0);
   var padding = {top:20, right: 30, left:50, bottom: 30};
@@ -59,7 +50,7 @@ function init(){
     .range([chartArea.height, 50])
 
 
-  
+
   svg.append("g")
     .classed("xAxis", true)
     .attr('transform','translate(' + padding.left + ',' + (chartArea.height + padding.top)+')')
@@ -118,3 +109,4 @@ function displayNumber(){
 
 console.log(rating_distribution)
 </script>
+{% endblock %}

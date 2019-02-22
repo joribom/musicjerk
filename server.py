@@ -66,7 +66,7 @@ def get_name():
     return db.get_name(uid);
 
 def render_template_wrapper(*args, **kwargs):
-    kwargs['name'] = get_name() if verify_cookie() else None
+    kwargs['username'] = get_name() if verify_cookie() else None
     return render_template(*args, **kwargs)
 
 def set_cookies(response, username):

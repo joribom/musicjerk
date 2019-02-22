@@ -16,7 +16,7 @@
   <body>
     {% block body %}
       <div class="header">
-        <h1 class="head-text">BIG Musicjerk{% if name is not none %} (Logged in as {{ name.title() }}){% endif %}</h1>
+        <h1 class="head-text">BIG Musicjerk{% if username is not none %} (Logged in as {{ username.title() }}){% endif %}</h1>
       </div>
       <div class="topnav">
         <a {% if active_page == "home" %} class="active"{% endif %} href="/">Home</a>
