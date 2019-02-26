@@ -19,8 +19,9 @@ Server for "The Musicjerk Project" (patent pending)
 * Run the command ```pip3 install oauth2client gspread jinja2 matplotlib spotipy flask lyricsgenius discogsclient psycopg2```
 
 ## How to run
-```python3 server.py```
+```python3 server.py --nodb```
 
-This will start the server on http://localhost:8000/ .
+This will start the server on http://localhost:8000/ with no database connection. If you want to use a database, remove the 
+```--nodb``` option, and create a psql server with name ```musicjerk```, then use ```db.sql``` to set up the database schema.
 The master version of this server will always be running at http://bigmusicjerk.com/ , so feel free to check the 
 webpage out there (runs on the master branch and pulls changes automatically through webhooks).
