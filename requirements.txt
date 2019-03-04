@@ -1,0 +1,11 @@
+python-dateutil
+gspread
+oauth2client
+flask
+jinja2
+matplotlib
+spotipy
+flask
+lyricsgenius
+discogs_client
+psycopg2
