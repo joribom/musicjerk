@@ -73,20 +73,20 @@
               </a>
             </div>
             <div class="optional">
-                <p>Optional:</p>
-                <a href="/albums/{{ albums[0][1].url }}">
-                  <div>
-                    <img src="{{ albums[0][1].image_url }}" alt="{{ albums[0][1].image_description }}" class="current-album-image"  style="height: 400px; width:400px">
-                    <div class="album-info">
-                      <p class="weekly-album-name">{{ albums[0][1].title }}</p>
-                      <p class="weekly-album-artist">{{ albums[0][1].artist }}</p>
-                    </div>
+              <p>Optional:</p>
+              <a href="/albums/{{ albums[0][1].url }}">
+                <div>
+                  <img src="{{ albums[0][1].image_url }}" alt="{{ albums[0][1].image_description }}" class="current-album-image"  style="height: 400px; width:400px">
+                  <div class="album-info">
+                    <p class="weekly-album-name">{{ albums[0][1].title }}</p>
+                    <p class="weekly-album-artist">{{ albums[0][1].artist }}</p>
                   </div>
-                </a>
-              </div>
+                </div>
+              </a>
+            </div>
           </div>
           <div>
-            <h2>Our Rating Trend:</h2>
+            <h2 style="text-align: center">Our Rating Trend</h2>
             <div class="chart-container">
               <canvas id="ratingTrendChart"></canvas>  
             </div>
@@ -108,15 +108,17 @@
   </div>
   <div class="footer">
   <script>
-    const albumAverages = {{ albumAverages | safe }}
-    const labels = albumAverages.map((_, i) => {
-      return i % 10 == 0 ? i : ''
-    }) 
+    const albumAverages = {{ albumAverages | safe }};
+    const albumTitles = {{ albumTitles | safe }};
+    const xAxisLabels = albumAverages.map((_, i) => {
+      return i % 10 == 0 ? i : '';
+    });
+
     const ctx = document.getElementById('ratingTrendChart').getContext('2d');
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: labels,
+        labels: xAxisLabels,
         datasets: [{
           label: "Rating Trend",
           backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -125,6 +127,20 @@
         }]
       },
       options: {
+        tooltips: {
+          custom: function(tooltip) {
+            if (!tooltip) return;
+            tooltip.displayColors = false;
+          },
+          callbacks: {
+            title: function(tooltipItem, data) {
+              return albumTitles[tooltipItem[0].index];
+            },
+            label: function(tooltipItem, data) {
+              return `Average rating: ${tooltipItem.yLabel}`;
+            }
+          }
+        },     
         scales: {
           xAxes: [{
             gridLines: {

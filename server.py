@@ -98,7 +98,7 @@ def main_page():
     resp = make_response(render_template_wrapper(
         'homepage.html', members = reader.people.keys(),
         albums = pairwise(reader.albums[::-1]),
-        albumtitles = [album.title for album in reader.albums],
+        albumTitles = [album.title for album in reader.albums],
         albumAverages = [album.rating for album in reader.albums[:-2]]
     ))
     return resp
