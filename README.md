@@ -17,6 +17,7 @@ Server for "The Musicjerk Project" (patent pending)
 * Install python3
 * Install pip3
 * Run the command ```pip3 install oauth2client gspread jinja2 matplotlib spotipy flask lyricsgenius discogs_client psycopg2```
+* Run the command ```pip3 install -r requirements.txt```
 
 ## How to run
 ```python3 server.py --nodb```

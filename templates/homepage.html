@@ -4,12 +4,19 @@
 {% block head %}
   <link rel="stylesheet" type="text/css" href="../styles/homepage.css" />
   {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  <style>
+    .chart-container {
+      position: relative;
+      margin: auto;
+      height: 80%;
+      width: 80%;
+    }
+  </style>
 {% endblock %}
 {% block body %}
   {{ super() }}
-  <script>
-     var albumtitles = {{ albumtitles | safe }};
-  </script>
+  
   <div class="body-div">
     <div class="album-div">
       <h2 style="text-align: center">Previous albums</h2>
@@ -79,8 +86,10 @@
               </div>
           </div>
           <div>
-              <h2>Our Rating Trend:</h2>
-              <img src="/data/average_ratings_over_time.png" alt="Average Ratings Over Time">
+            <h2>Our Rating Trend:</h2>
+            <div class="chart-container">
+              <canvas id="ratingTrendChart"></canvas>  
+            </div>
           </div>
       </div>
     </div>
@@ -98,6 +107,33 @@
 
   </div>
   <div class="footer">
-
+  <script>
+    const albumAverages = {{ albumAverages | safe }}
+    const labels = albumAverages.map((_, i) => {
+      return i % 10 == 0 ? i : ''
+    }) 
+    const ctx = document.getElementById('ratingTrendChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Rating Trend",
+          backgroundColor: 'rgba(0, 0, 0, 0)',
+          borderColor: 'rgb(255, 99, 132)',
+          data: albumAverages,
+        }]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            gridLines: {
+              display:false,
+            }
+          }]
+        }
+      }
+    });
+  </script>
   </div>
 {% endblock %}
