@@ -98,7 +98,8 @@ def main_page():
     resp = make_response(render_template_wrapper(
         'homepage.html', members = reader.people.keys(),
         albums = pairwise(reader.albums[::-1]),
-        albumtitles = [album.title for album in reader.albums]
+        albumtitles = [album.title for album in reader.albums],
+        albumAverages = [{"title": album.title, "x": i, "y": album.rating, "url": album.url} for (i, album) in enumerate(reader.albums, 1) if album.rating != None]
     ))
     return resp
 

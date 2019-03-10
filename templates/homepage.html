@@ -4,12 +4,19 @@
 {% block head %}
   <link rel="stylesheet" type="text/css" href="../styles/homepage.css" />
   {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <style>
+    .chart-container {
+      position: relative;
+      margin: auto;
+      height: 80%;
+      width: 80%;
+    }
+  </style>
 {% endblock %}
 {% block body %}
   {{ super() }}
-  <script>
-     var albumtitles = {{ albumtitles | safe }};
-  </script>
+  
   <div class="body-div">
     <div class="album-div">
       <h2 style="text-align: center">Previous albums</h2>
@@ -66,21 +73,23 @@
               </a>
             </div>
             <div class="optional">
-                <p>Optional:</p>
-                <a href="/albums/{{ albums[0][1].url }}">
-                  <div>
-                    <img src="{{ albums[0][1].image_url }}" alt="{{ albums[0][1].image_description }}" class="current-album-image"  style="height: 400px; width:400px">
-                    <div class="album-info">
-                      <p class="weekly-album-name">{{ albums[0][1].title }}</p>
-                      <p class="weekly-album-artist">{{ albums[0][1].artist }}</p>
-                    </div>
+              <p>Optional:</p>
+              <a href="/albums/{{ albums[0][1].url }}">
+                <div>
+                  <img src="{{ albums[0][1].image_url }}" alt="{{ albums[0][1].image_description }}" class="current-album-image"  style="height: 400px; width:400px">
+                  <div class="album-info">
+                    <p class="weekly-album-name">{{ albums[0][1].title }}</p>
+                    <p class="weekly-album-artist">{{ albums[0][1].artist }}</p>
                   </div>
-                </a>
-              </div>
+                </div>
+              </a>
+            </div>
           </div>
           <div>
-              <h2>Our Rating Trend:</h2>
-              <img src="/data/average_ratings_over_time.png" alt="Average Ratings Over Time">
+            <h2 style="text-align: center">Our Rating Trend</h2>
+            <div class="chart-container">
+              <canvas id="ratingTrendChart"></canvas>  
+            </div>
           </div>
       </div>
     </div>
@@ -98,6 +107,58 @@
 
   </div>
   <div class="footer">
-
+  <script>
+    const albumAverages = {{ albumAverages | safe }};
+    const ctx = document.getElementById('ratingTrendChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: "Rating Trend",
+          backgroundColor: 'rgba(0, 0, 0, 0)',
+          borderColor: 'rgb(255, 99, 132)',
+          data: albumAverages,
+        }]
+      },
+      options: {
+        onClick: function(_, chartElement) {
+          if (chartElement.length > 0) 
+            window.location.href = `/albums/${albumAverages[chartElement[0]._index].url}`;
+        },
+        hover: {
+          onHover: function(e, chartElement) {
+            e.target.style.cursor = chartElement.length > 0 ? 'pointer' : 'default';
+          }
+        },
+        tooltips: {
+          custom: function(tooltip) {
+            if (!tooltip) return;
+            tooltip.displayColors = false;
+          },
+          callbacks: {
+            title: function(tooltipItem, data) {
+              return albumAverages[tooltipItem[0].index].title;
+            },
+            label: function(tooltipItem, data) {
+              return `Average rating: ${tooltipItem.yLabel}`;
+            }
+          }
+        },     
+        scales: {
+          xAxes: [{
+            ticks: {
+              min: 1
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              max: 10
+            }
+          }]
+        }
+      }
+    });
+  </script>
   </div>
 {% endblock %}
