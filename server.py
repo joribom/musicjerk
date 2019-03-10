@@ -99,7 +99,7 @@ def main_page():
         'homepage.html', members = reader.people.keys(),
         albums = pairwise(reader.albums[::-1]),
         albumtitles = [album.title for album in reader.albums],
-        albumAverages = [{"title": album.title, "x": i, "y": album.rating} for (i, album) in enumerate(reader.albums, 1) if album.rating != None]
+        albumAverages = [{"title": album.title, "x": i, "y": album.rating, "url": album.url} for (i, album) in enumerate(reader.albums, 1) if album.rating != None]
     ))
     return resp
 

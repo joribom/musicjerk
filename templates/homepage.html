@@ -4,7 +4,7 @@
 {% block head %}
   <link rel="stylesheet" type="text/css" href="../styles/homepage.css" />
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
   <style>
     .chart-container {
       position: relative;
@@ -121,6 +121,15 @@
         }]
       },
       options: {
+        onClick: function(_, chartElement) {
+          if (chartElement.length > 0) 
+            window.location.href = `/albums/${albumAverages[chartElement[0]._index].url}`:
+        },
+        hover: {
+          onHover: function(e, chartElement) {
+            e.target.style.cursor = chartElement.length > 0 ? 'pointer' : 'default';
+          }
+        },
         tooltips: {
           custom: function(tooltip) {
             if (!tooltip) return;
@@ -131,7 +140,7 @@
               return albumAverages[tooltipItem[0].index].title;
             },
             beforeBody: function(tooltipItem, data) {
-              return `Week: ${tooltipItem[0].index + 1}`
+              return `Week: ${tooltipItem[0].index + 1}`;
             },
             label: function(tooltipItem, data) {
               return `Average rating: ${tooltipItem.yLabel}`;
