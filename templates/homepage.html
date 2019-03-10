@@ -123,7 +123,7 @@
       options: {
         onClick: function(_, chartElement) {
           if (chartElement.length > 0) 
-            window.location.href = `/albums/${albumAverages[chartElement[0]._index].url}`:
+            window.location.href = `/albums/${albumAverages[chartElement[0]._index].url}`;
         },
         hover: {
           onHover: function(e, chartElement) {
@@ -138,9 +138,6 @@
           callbacks: {
             title: function(tooltipItem, data) {
               return albumAverages[tooltipItem[0].index].title;
-            },
-            beforeBody: function(tooltipItem, data) {
-              return `Week: ${tooltipItem[0].index + 1}`;
             },
             label: function(tooltipItem, data) {
               return `Average rating: ${tooltipItem.yLabel}`;
