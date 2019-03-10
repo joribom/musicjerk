@@ -109,16 +109,10 @@
   <div class="footer">
   <script>
     const albumAverages = {{ albumAverages | safe }};
-    const albumTitles = {{ albumTitles | safe }};
-    const xAxisLabels = albumAverages.map((_, i) => {
-      return i % 10 == 0 ? i : '';
-    });
-
     const ctx = document.getElementById('ratingTrendChart').getContext('2d');
     const chart = new Chart(ctx, {
-      type: 'line',
+      type: 'scatter',
       data: {
-        labels: xAxisLabels,
         datasets: [{
           label: "Rating Trend",
           backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -134,7 +128,10 @@
           },
           callbacks: {
             title: function(tooltipItem, data) {
-              return albumTitles[tooltipItem[0].index];
+              return albumAverages[tooltipItem[0].index].title;
+            },
+            beforeBody: function(tooltipItem, data) {
+              return `Week: ${tooltipItem[0].index + 1}`
             },
             label: function(tooltipItem, data) {
               return `Average rating: ${tooltipItem.yLabel}`;
@@ -143,8 +140,14 @@
         },     
         scales: {
           xAxes: [{
-            gridLines: {
-              display:false,
+            ticks: {
+              min: 1
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              max: 10
             }
           }]
         }
