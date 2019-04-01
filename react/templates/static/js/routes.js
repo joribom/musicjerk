@@ -1,7 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, NavLink } from 'react-router-dom';
 import Home from './components/Home';
-import SignIn from './components/Login';
+import Login from './components/Login';
 import TopBar from './components/TopBar';
 // import more components
 
@@ -45,22 +45,9 @@ function AppRouter() {
     <Router>
      <div>
         <TopBar />
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-          <li>
-            <Link to="/topics">Topics</Link>
-          </li>
-        </ul>
-
-        <hr />
 
         <Route exact path="/" component={Home} />
-        <Route path="/login" component={SignIn} />
+        <Route path="/login" component={Login} />
         <Route path="/topics" component={Topics} />
      </div>
     </Router>

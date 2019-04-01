@@ -18,6 +18,7 @@ const styles = theme => ({
     width: 'auto',
     display: 'block', // Fix IE 11 issue.
     color: '#26262b',
+    backgroundColor: '#26262b',
     marginLeft: theme.spacing.unit * 3,
     marginRight: theme.spacing.unit * 3,
     [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
@@ -46,49 +47,59 @@ const styles = theme => ({
   },
 });
 
-function SignIn(props) {
-  const { classes } = props;
+class Login extends Component {
 
-  return (
-    <main className={classes.main}>
-      <CssBaseline />
-      <Paper className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          BIG Musicjerk Sign In
-        </Typography>
-        <form className={classes.form}>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="email">Email Address</InputLabel>
-            <Input id="email" name="email" autoComplete="email" autoFocus />
-          </FormControl>
-          <FormControl margin="normal" required fullWidth>
-            <InputLabel htmlFor="password">Password</InputLabel>
-            <Input name="password" type="password" id="password" autoComplete="current-password" />
-          </FormControl>
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-          >
-            Sign in
-          </Button>
-        </form>
-      </Paper>
-    </main>
-  );
+  onSubmit(event){
+    event.preventDefault();
+    const data = new FormData(event.target);
+    fetch('/api/login', {
+      method: 'POST',
+      body: data,
+    }).then(response => {
+      console.log(response);
+      response.json().then(data => {console.log(data)})
+    });
+  }
+
+  render(){
+    const { classes } = this.props;
+
+    return (
+      <div className={classes.main}>
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            BIG Musicjerk Sign In
+          </Typography>
+          <form className={classes.form} onSubmit={this.onSubmit}>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="username">Username</InputLabel>
+              <Input id="username" name="username" autoComplete="username" autoFocus />
+            </FormControl>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input name="password" type="password" id="password" autoComplete="current-password" />
+            </FormControl>
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Sign in
+            </Button>
+          </form>
+        </Paper>
+      </div>
+    );
+  }
 }
 
-SignIn.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(SignIn);
+export default withStyles(styles)(Login);
