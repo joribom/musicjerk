@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from album import Album
+from .album import Album
 
 class Person:
     def __init__(self, name):

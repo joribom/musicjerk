@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
 from collections import OrderedDict
-from person import Person
-from album import Album, make_url
+from .person import Person
+from .album import Album, make_url
 from copy import copy
 from threading import Thread, Lock
 

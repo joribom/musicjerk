@@ -1,6 +1,6 @@
-from wikireader import get_wiki_summary, get_wiki_info
-from spotifyreader import get_spotify_data
-from discogsreader import get_genres
+from .wikireader import get_wiki_summary, get_wiki_info
+from .spotifyreader import get_spotify_data
+from .discogsreader import get_genres
 from urllib import parse
 from threading import Lock, Thread
 
