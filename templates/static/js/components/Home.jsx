@@ -16,7 +16,7 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        minHeight: '1080px'
+        overflow: 'hidden',
     },
 
     thisWeekContainer: {
@@ -25,6 +25,10 @@ const styles = theme => ({
         justifyContent: 'center',
         backgroundColor: '#2c2f33',
         boxShadow: '0px 0px 15px #1b1a1a inset'
+    },
+
+    albumDiv: {
+        width: '310px',
     },
 
     progress: {
@@ -68,6 +72,14 @@ class Home extends Component {
           return {albums: data, loadingPrevious: false};
         });
       }));
+      fetch('/api/members', {
+        method: 'GET'
+      }).then(response => response.json()
+      .then(data => {
+        this.setState((state, props) => {
+          return {members: data, loadingMembers: false};
+        });
+      }));
     }
 
     render() {
@@ -94,7 +106,9 @@ class Home extends Component {
       }
       return (
         <div className={this.classes.bodyDiv}>
-          {albumList}
+          <div className={this.classes.albumDiv}>
+            {albumList}
+          </div>
           <div className={this.classes.thisWeekContainer}>
             {thisWeek}
           </div>

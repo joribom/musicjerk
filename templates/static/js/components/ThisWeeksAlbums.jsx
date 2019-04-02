@@ -3,15 +3,14 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 const styles = theme => ({
 
+    thisWeek: {
+        overflow: 'hidden',
+        overflowY: 'scroll',
+    },
 
     currentAlbumImage: {
         height: '400px',
         width: '400px',
-    },
-
-    albumDiv: {
-        display: 'flex',
-        flexBasis: 'row'
     },
 
     albumHeader: {
@@ -22,37 +21,6 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'row'
    },
-
-   albumList: {
-       paddingLeft: '0px',
-       overflow: 'hidden',
-       overflowY: 'scroll',
-       height: '710px',
-   },
-
-    albumListDiv: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-
-    albumInfo: {
-        display: 'flex',
-        justifyContent: 'space-evenly',
-        flexDirection: 'column',
-        height: '100%'
-    },
-
-    membersDiv: {
-        width: '310px'
-    },
-
-    albumListHead:{
-        marginBottom: '5px',
-        display: 'flex',
-        width: '100%'
-    },
 
     weeklyAlbumName: {
         textAlign: 'center',
@@ -76,16 +44,6 @@ const styles = theme => ({
         marginBottom: '8px',
         width: '50%',
         textAlign: 'center',
-    },
-
-    mandatoryHead: {
-        marginLeft: '35px',
-        textAlign: 'center'
-    },
-
-    optionalHead: {
-        marginLeft: '70px',
-        textAlign: 'center'
     },
 
     optional: {

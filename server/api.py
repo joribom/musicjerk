@@ -26,6 +26,11 @@ def this_week():
         {'name': opt.title, 'artist': opt.artist, 'url' : opt.url, 'image' : opt.image_url})
     return jsonify(data)
 
+
+@api_blueprint.route('/api/members')
+def members():
+    return jsonify([name for name in reader.people.keys()])
+
 @api_blueprint.route('/api/login', methods = ['POST'])
 def login():
     error = None

@@ -3,6 +3,10 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 const styles = theme => ({
 
+    member: {
+        textTransform: 'capitalize'
+    },
+
     membersList: {
         marginLeft: '8px'
     }
@@ -20,7 +24,7 @@ class MemberList extends Component {
         for (const index in this.props.members){
             const member = this.props.members[index];
             members.push(
-              <li><a key={member.name} href={member.url}>{member.name}</a></li>
+              <li><a className={this.classes.member} key={member} href={'/' + member}>{member}</a></li>
             );
         }
         return (
