@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 const styles = theme => ({
@@ -74,7 +75,7 @@ class ThisWeeksAlbums extends Component {
                 <div className={this.classes.currentAlbums}>
                   <div className={this.classes.mandatory}>
                     <p>Mandatory:</p>
-                    <a href={mand.url}>
+                    <Link to={'/albums/' + mand.url}>
                       <div style={{textAlign: 'center'}}>
                         <img src={mand.image} alt={mand.name} className={this.classes.currentAlbumImage}/>
                         <div>
@@ -82,11 +83,11 @@ class ThisWeeksAlbums extends Component {
                           <p className={this.classes.weeklyAlbumArtist}>{mand.artist}</p>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                   <div className={this.classes.optional}>
                     <p>Optional:</p>
-                    <a href={opt.url}>
+                    <Link to={'/albums/' + opt.url}>
                       <div style={{textAlign: 'center'}}>
                         <img src={opt.image} alt={opt.name} className={this.classes.currentAlbumImage}  style={{height: '400px', width:'400px'}}/>
                         <div>
@@ -94,7 +95,7 @@ class ThisWeeksAlbums extends Component {
                           <p className={this.classes.weeklyAlbumArtist}>{opt.artist}</p>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                 </div>
                 <div>

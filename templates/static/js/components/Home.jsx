@@ -17,6 +17,7 @@ const styles = theme => ({
         flexDirection: 'row',
         justifyContent: 'space-between',
         overflow: 'hidden',
+        textAlign: 'center',
     },
 
     thisWeekContainer: {
@@ -83,7 +84,6 @@ class Home extends Component {
     }
 
     render() {
-      //const albums = [{name : 'test', url : '/test', image : 'https://i.scdn.co/image/06ed478c89f07a5e9daf7a59ec1c556a81952cd1'}];
       let albumList;
       if (this.state.loadingPrevious){
         albumList = <CircularProgress className={this.state.progress} />

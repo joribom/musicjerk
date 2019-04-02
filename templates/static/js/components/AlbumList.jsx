@@ -107,14 +107,14 @@ class AlbumList extends Component {
             albums.push(
                 <div key={mand.name} className={this.classes.albumDiv}>
                   <div>
-                    <a href={mand.url}>
+                    <a href={'/albums/' + mand.url}>
                       <div>
                         <img src={mand.image} alt={mand.name} className={this.classes.oldAlbumImage}/>
                       </div>
                     </a>
                   </div>
                   <div key={opt.name} className={this.classes.optional}>
-                    <a href={opt.url}>
+                    <a href={'/albums/' + opt.url}>
                       <div>
                         <img src={opt.image} alt={opt.name} className={this.classes.oldAlbumImage}/>
                       </div>
@@ -124,7 +124,7 @@ class AlbumList extends Component {
             } else {
                 albums.push(
                   <div key={mand.name} className={this.classes.mandatory}>
-                    <a href={mand.url}>
+                    <a href={'/albums/' + mand.url}>
                       <div>
                         <img src={mand.image} alt={mand.name} className={this.classes.oldAlbumImage}/>
                       </div>

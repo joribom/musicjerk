@@ -87,7 +87,7 @@ a:visited {
 
 /* Add a color to the active/current link */
 .topnav a.active {
-  background-color: #4CAF50;
+  background-color: #3f51b5;
   color: white;
 }
 

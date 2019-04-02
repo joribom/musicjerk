@@ -31,6 +31,21 @@ def this_week():
 def members():
     return jsonify([name for name in reader.people.keys()])
 
+@api_blueprint.route('/api/albums/<albumname>/')
+def album(albumname):
+    album = reader.album_dict[albumname];
+    data = {
+        'name' : album.title,
+        'artist' : album.artist,
+        'summary' : album.summary,
+        'genres' : album.genres,
+        'styles' : album.styles,
+        'spotify_id' : album.spotify_id,
+        'image' : album.image_url
+    }
+    print(data)
+    return jsonify(data)
+
 @api_blueprint.route('/api/login', methods = ['POST'])
 def login():
     error = None
