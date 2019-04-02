@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import AlbumList from './AlbumList';
 import ThisWeeksAlbums from './ThisWeeksAlbums';
 import MemberList from './MemberList';
+import TrendChart from './TrendChart';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -21,7 +22,6 @@ const styles = theme => ({
     },
 
     thisWeekContainer: {
-        display: 'flex',
         flexGrow: '1',
         justifyContent: 'center',
         backgroundColor: '#2c2f33',
@@ -39,6 +39,13 @@ const styles = theme => ({
     membersDiv: {
         width: '310px'
     },
+
+    chartContainer: {
+      position: 'relative',
+      margin: 'auto',
+      height: '80%',
+      width: '80%',
+    }
 })
 
 class Home extends Component {
@@ -51,7 +58,9 @@ class Home extends Component {
             albums: [],
             loadingPrevious: true,
             members: [],
-            loadingMembers: true
+            loadingMembers: true,
+            albumAverages: [],
+            loadingAverages: true
         }
     }
 
@@ -60,7 +69,6 @@ class Home extends Component {
         method: 'GET'
       }).then(response => response.json()
       .then(data => {
-        console.log(data);
         this.setState((state, props) => {
           return {thisWeek: data, loadingThisWeek: false};
         });
@@ -79,6 +87,14 @@ class Home extends Component {
       .then(data => {
         this.setState((state, props) => {
           return {members: data, loadingMembers: false};
+        });
+      }));
+      fetch('/api/album-averages', {
+        method: 'GET'
+      }).then(response => response.json()
+      .then(data => {
+        this.setState((state, props) => {
+          return {albumAverages: data, loadingAverages: false};
         });
       }));
     }
@@ -104,13 +120,24 @@ class Home extends Component {
       } else {
         members = <MemberList members={this.state.members}/>;
       }
+      let trendchart;
+      if (this.state.loadingAverages){
+        trendchart = <CircularProgress className={this.state.progress} size='200' />
+      } else {
+        trendchart = <TrendChart albumAverages={this.state.albumAverages} />;
+      }
       return (
         <div className={this.classes.bodyDiv}>
           <div className={this.classes.albumDiv}>
             {albumList}
           </div>
           <div className={this.classes.thisWeekContainer}>
-            {thisWeek}
+            <div width="100%">
+              {thisWeek}
+            </div>
+            <div className={this.classes.chartContainer}>
+              {trendchart}
+            </div>
           </div>
           <div className={this.classes.membersDiv}>
             {members}

@@ -30,7 +30,6 @@ class AlbumPage extends Component {
         method: 'GET'
       }).then(response => response.json()
       .then(data => {
-        console.log(data);
         this.setState((state, props) => {
           return {data: data, loading: false};
         });
@@ -56,7 +55,6 @@ class AlbumPage extends Component {
     }
 
     render() {
-        console.log("Big test!");
         if (this.state.loading){
             return (<CircularProgress size='200' />)
         }
