@@ -44,8 +44,8 @@ function AppRouter() {
 //export default (
     <Router>
      <div>
-         <div class="header">
-           <h1 class="head-text">BIG Musicjerk</h1>
+         <div className="header">
+           <h1 className="head-text">BIG Musicjerk</h1>
          </div>
         <TopBar />
 

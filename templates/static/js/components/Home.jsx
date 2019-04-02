@@ -51,11 +51,19 @@ class Home extends Component {
     }
 
     componentDidMount(){
-      fetch('/api/albums', {
+      fetch('/api/this-week', {
         method: 'GET'
       }).then(response => response.json()
       .then(data => {
         console.log(data);
+        this.setState((state, props) => {
+          return {thisWeek: data, loadingThisWeek: false};
+        });
+      }));
+      fetch('/api/albums', {
+        method: 'GET'
+      }).then(response => response.json()
+      .then(data => {
         this.setState((state, props) => {
           return {albums: data, loadingPrevious: false};
         });
@@ -73,14 +81,16 @@ class Home extends Component {
       let thisWeek;
       if (this.state.loadingThisWeek){
         thisWeek = <CircularProgress className={this.state.progress} size='200' />
+      } else if (this.state.loadingPrevious){
+        thisWeek = <ThisWeeksAlbums albums={this.state.thisWeek}/>;
       } else {
-        thisWeek = <ThisWeeksAlbums />;
+        thisWeek = <ThisWeeksAlbums albums={this.state.thisWeek} previous={this.state.albums}/>;
       }
       let members;
       if (this.state.loadingMembers){
         members = <CircularProgress className={this.state.progress} />
       } else {
-        members = <MemberList />;
+        members = <MemberList members={this.state.members}/>;
       }
       return (
         <div className={this.classes.bodyDiv}>
@@ -89,7 +99,7 @@ class Home extends Component {
             {thisWeek}
           </div>
           <div className={this.classes.membersDiv}>
-          {members}
+            {members}
           </div>
         </div>
       );

@@ -18,6 +18,14 @@ def albums():
     data.append(({'name': mand.title, 'artist': mand.artist, 'url' : mand.url, 'image' : mand.image_url}, None))
     return jsonify(data)
 
+@api_blueprint.route('/api/this-week')
+def this_week():
+    mand, opt = reader.albums[-2:]
+    data = (
+        {'name': mand.title, 'artist': mand.artist, 'url' : mand.url, 'image' : mand.image_url},
+        {'name': opt.title, 'artist': opt.artist, 'url' : opt.url, 'image' : opt.image_url})
+    return jsonify(data)
+
 @api_blueprint.route('/api/login', methods = ['POST'])
 def login():
     error = None
