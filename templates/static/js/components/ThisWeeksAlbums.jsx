@@ -6,7 +6,7 @@ const styles = theme => ({
 
     currentAlbumImage: {
         height: '400px',
-        width: '400px'
+        width: '400px',
     },
 
     albumDiv: {
@@ -73,7 +73,9 @@ const styles = theme => ({
 
     mandatory: {
         marginLeft: '8px',
-        marginBottom: '8px'
+        marginBottom: '8px',
+        width: '50%',
+        textAlign: 'center',
     },
 
     mandatoryHead: {
@@ -90,7 +92,9 @@ const styles = theme => ({
         marginLeft: '8px',
         marginBottom: '8px',
         paddingLeft: '8px',
-        borderLeft: '3px solid  rgba(0,0,0,.1)'
+        borderLeft: '3px solid  rgba(0,0,0,.1)',
+        width: '50%',
+        textAlign: 'center',
     }
 });
 
@@ -113,7 +117,7 @@ class ThisWeeksAlbums extends Component {
                   <div className={this.classes.mandatory}>
                     <p>Mandatory:</p>
                     <a href={mand.url}>
-                      <div>
+                      <div style={{textAlign: 'center'}}>
                         <img src={mand.image} alt={mand.name} className={this.classes.currentAlbumImage}/>
                         <div>
                           <p className={this.classes.weeklyAlbumName}>{mand.name}</p>
@@ -125,7 +129,7 @@ class ThisWeeksAlbums extends Component {
                   <div className={this.classes.optional}>
                     <p>Optional:</p>
                     <a href={opt.url}>
-                      <div>
+                      <div style={{textAlign: 'center'}}>
                         <img src={opt.image} alt={opt.name} className={this.classes.currentAlbumImage}  style={{height: '400px', width:'400px'}}/>
                         <div>
                           <p className={this.classes.weeklyAlbumName}>{opt.name}</p>
