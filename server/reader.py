@@ -130,7 +130,7 @@ class Reader:
                 col    = col + 7
                 name   = top_row[col].lower() if top_row[col] else name
                 header = col_headers[col]
-                new_people[name].add_value(album, header, value)
+                new_people[name].add_value(album, header, value, album_copy = new_albums[-1])
                 if name not in self.user_data:
                     self.user_data[name] = {}
                 if album not in self.user_data.get(name):

@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from copy import copy
 from .album import Album
 
 class Person:
@@ -14,16 +15,19 @@ class Person:
         album = Album(rating, best_tracks, worst_tracks)
         self.albums[album_name] = album
 
-    def add_value(self, album_name, header, value):
+    def add_value(self, album_name, header, value, album_copy = None):
         if album_name not in self.albums:
-            self.albums[album_name] = Album()
+            if album_copy is not None:
+                self.albums[album_name] = copy(album_copy)
+            else:
+                self.albums[album_name] = Album()
         self.albums[album_name].add_value(header, value)
 
     def get_ratings(self):
         ratings = []
-        for album in self.albums.values():
-            if album.rating is not None:
-                ratings.append(album.rating)
+        for i, album in enumerate(self.albums.values()):
+            if album and album.rating is not None:
+                ratings.append({'y': album.rating, 'x': i, 'title': album.title, 'url': album.url})
         return ratings
 
     def generate_likeness(self, people):

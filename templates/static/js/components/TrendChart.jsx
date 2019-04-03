@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
 import { Chart, Line } from 'react-chartjs-2';
-import withStyles from '@material-ui/core/styles/withStyles';
-
-const styles = theme => ({
-    membersDiv: {
-        width: '310px'
-    },
-})
 
 class TrendChart extends Component {
     render() {
@@ -64,4 +57,4 @@ class TrendChart extends Component {
     }
 }
 
-export default withStyles(styles)(TrendChart);
+export default TrendChart;

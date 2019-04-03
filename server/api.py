@@ -46,6 +46,11 @@ def this_week():
 def members():
     return jsonify([name for name in reader.people.keys()])
 
+
+@api_blueprint.route('/api/member/<name>/')
+def member(name):
+    return jsonify({'likeness': reader.get_likeness(name.lower()), 'albums': reader.get_ratings(name.lower())})
+
 @api_blueprint.route('/api/albums/<albumname>/')
 def album(albumname):
     album = reader.album_dict[albumname];

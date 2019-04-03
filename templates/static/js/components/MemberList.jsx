@@ -25,7 +25,7 @@ class MemberList extends Component {
         for (const index in this.props.members){
             const member = this.props.members[index];
             members.push(
-              <li key={member}><a className={this.classes.member}href={'/' + member}>{member}</a></li>
+              <li key={member}><a className={this.classes.member}href={'/member/' + member}>{member}</a></li>
             );
         }
         return (
