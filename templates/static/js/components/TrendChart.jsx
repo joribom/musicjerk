@@ -18,7 +18,8 @@ class TrendChart extends Component {
             backgroundColor: 'rgba(0, 0, 0, 0)',
             borderColor: 'rgb(255, 99, 132)',
             data: albumAverages,
-          }]
+          }],
+          labels: albumAverages.map(x => x.x),
         };
         const options = {
           onClick: function(_, chartElement) {
@@ -47,7 +48,8 @@ class TrendChart extends Component {
           scales: {
             xAxes: [{
               ticks: {
-                min: 1
+                min: 1,
+                stepSize: 20
               }
             }],
             yAxes: [{
