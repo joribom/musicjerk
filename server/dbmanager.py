@@ -220,14 +220,15 @@ def album_info_set(cur, album_id):
     command = 'SELECT spotify_id, image_url, summary FROM albums WHERE id=%s'
     cur.execute(command, (album_id,))
     res = fst(cur.fetchone())
-    return all(map(lambda x: x is not None, res)) if res is not None else False
+    print(res)
+    return all(map(lambda x: bool(x), res)) if res else False
 
 @using_db
 def album_genres_set(cur, album_id):
     command = 'SELECT genres, styles FROM albums WHERE id=%s'
     cur.execute(command, (album_id,))
     res = fst(cur.fetchone())
-    return all(map(lambda x: x is not None, res)) if res is not None else False
+    return all(map(lambda x: bool(x), res)) if res else False
 
 if __name__ == "__main__":
     from collections import namedtuple

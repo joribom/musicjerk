@@ -17,6 +17,7 @@ def get_genres(album, artist):
         artist = re.sub('\s*\(.*?\)', '', artist)
         global latest_fetch
         if datetime.now() - latest_fetch < timedelta(seconds = 1.5):
+            print('waiting for %f seconds' % (timedelta(seconds = 3) - (datetime.now() - latest_fetch)).total_seconds())
             sleep((timedelta(seconds = 3) - (datetime.now() - latest_fetch)).total_seconds())
         results = client.search(album + " " + artist, type='release')
         if not results:
