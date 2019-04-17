@@ -171,11 +171,11 @@ def _insert_rating(cur, album_id, uid, rating):
 def _update_rating(cur, album_id, uid, rating):
     command = """
         UPDATE ratings SET
-        album_id=%s, uid=%s
+        rating=%s
         WHERE
-        rating=%s;
+        album_id=%s AND uid=%s;
     """
-    cur.execute(command, (album_id, uid, rating))
+    cur.execute(command, (rating, album_id, uid))
 
 def update_rating(rating):
     """Rating = namedtuple('Rating', 'album_id uid rating best worst')"""
@@ -194,6 +194,40 @@ def update_rating(rating):
             rating.uid,
             rating.rating
         )
+
+@using_db
+def update_album_info(cur, album_id, spotify_id, image_url, summary):
+    command = """
+        UPDATE albums SET
+        image_url=%s, summary=%s, spotify_id=%s
+        WHERE
+        id=%s
+    """
+    cur.execute(command, (image_url, summary, spotify_id, album_id))
+
+@using_db
+def update_album_genres(cur, album_id, genres, styles):
+    command = """
+        UPDATE albums SET
+        genres=%s, styles=%s
+        WHERE
+        id=%s
+    """
+    cur.execute(command, (genres, styles, album_id))
+
+@using_db
+def album_info_set(cur, album_id):
+    command = 'SELECT spotify_id, image_url, summary FROM albums WHERE id=%s'
+    cur.execute(command, (album_id,))
+    res = fst(cur.fetchone())
+    return all(map(lambda x: x is not None, res)) if res is not None else False
+
+@using_db
+def album_genres_set(cur, album_id):
+    command = 'SELECT genres, styles FROM albums WHERE id=%s'
+    cur.execute(command, (album_id,))
+    res = fst(cur.fetchone())
+    return all(map(lambda x: x is not None, res)) if res is not None else False
 
 if __name__ == "__main__":
     from collections import namedtuple

@@ -15,6 +15,22 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: update_score(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.update_score() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  UPDATE albums SET score=(SELECT AVG(rating) FROM ratings WHERE album_id=NEW.album_id) WHERE id=NEW.album_id;
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.update_score() OWNER TO postgres;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -30,7 +46,7 @@ CREATE TABLE public.albums (
     title character varying NOT NULL,
     artist character varying NOT NULL,
     selected_by integer NOT NULL,
-    url varchar NOT NULL,
+    url character varying NOT NULL,
     score numeric,
     image_url character varying,
     summary character varying,
@@ -178,9 +194,8 @@ CREATE TABLE public.worst_tracks_votes (
 
 ALTER TABLE public.worst_tracks_votes OWNER TO postgres;
 
-
 --
--- Name: albums uid; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: albums id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.albums ALTER COLUMN id SET DEFAULT nextval('public.albums_id_seq'::regclass);
@@ -194,83 +209,11 @@ ALTER TABLE ONLY public.users ALTER COLUMN uid SET DEFAULT nextval('public.users
 
 
 --
--- Data for Name: albums; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: albums albums_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-COPY public.albums (id, week, mandatory, title, artist, selected_by, score, image_url, summary, spotify_id, genres, styles) FROM stdin;
-\.
-
-
---
--- Data for Name: best_tracks_votes; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.best_tracks_votes (uid, album_id, index) FROM stdin;
-\.
-
-
---
--- Data for Name: passwords; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.passwords (uid, hash, salt) FROM stdin;
-2	442c24a5a0e6b775a970625faef649fb518224a32c24aa3e54e046483046414171c7fcb7e1ed34b86e909c6058c352144b2379aec16afaaf5dd47a474f653d61	39aeca08fea44d11a0f81190f2afab3e
-\.
-
-
---
--- Data for Name: ratings; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.ratings (uid, album_id, rating) FROM stdin;
-\.
-
-
---
--- Data for Name: songs; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.songs (album_id, index) FROM stdin;
-\.
-
-
---
--- Data for Name: spotify_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.spotify_tokens (uid, access_token, access_until, refresh_token) FROM stdin;
-2	BQDPQSdtCKFK6xZoqPU_R-cXnx2ZQL97csO5742iH4p1tidq8dv2LvBsFUZfWyWTB26QSIJeRykLZJtP4QyFMXW4uTipyBdc6WSh9cK477j64wnVZ76WC1ywjnqO36YfVnvHeKm5PqXUkNL8gsxwocc	\N	AQAOaONy61gZ96umZUWXZHLTq24pSwf5dkYYMutOkGGVqDhODpRkfyrkssVCZrLextsc8B6HRvBZRttF1Rl-oEWoKkIFyJxUDcIJAeJe_jKBz5jeqESLYbFuockXy4i3lawwKw
-\.
-
-
---
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.users (uid, name, session, cookie) FROM stdin;
-2	johan	WOULiyna8chpB6f_icjZlA	\N
-\.
-
-
---
--- Data for Name: worst_tracks_votes; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.worst_tracks_votes (uid, album_id, index) FROM stdin;
-\.
-
-
---
--- Name: albums_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.albums_id_seq', 2, true);
-
---
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.users_id_seq', 2, true);
+ALTER TABLE ONLY public.albums
+    ADD CONSTRAINT albums_id_key UNIQUE (id);
 
 
 --
@@ -287,14 +230,6 @@ ALTER TABLE ONLY public.albums
 
 ALTER TABLE ONLY public.albums
     ADD CONSTRAINT albums_week_mandatory_key UNIQUE (week, mandatory);
-
-
---
--- Name: albums albums_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.albums
-    ADD CONSTRAINT albums_id_key UNIQUE (id);
 
 
 --
@@ -338,14 +273,6 @@ ALTER TABLE ONLY public.spotify_tokens
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (uid);
-
-
---
 -- Name: users users_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -354,11 +281,33 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (uid);
+
+
+--
 -- Name: worst_tracks_votes worst_tracks_votes_uid_album_id_index_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.worst_tracks_votes
     ADD CONSTRAINT worst_tracks_votes_uid_album_id_index_key UNIQUE (uid, album_id, index);
+
+
+--
+-- Name: ratings update_score_on_insert; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_score_on_insert AFTER INSERT ON public.ratings FOR EACH ROW EXECUTE PROCEDURE public.update_score();
+
+
+--
+-- Name: ratings update_score_on_update; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER update_score_on_update AFTER UPDATE ON public.ratings FOR EACH ROW EXECUTE PROCEDURE public.update_score();
 
 
 --
@@ -452,3 +401,4 @@ ALTER TABLE ONLY public.worst_tracks_votes
 --
 -- PostgreSQL database dump complete
 --
+

@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, make_response, redirect, request
-from .reader import Reader
+import urllib.parse
+from . import dbreader
 
 api_blueprint = Blueprint('api', __name__)
-reader = Reader()
 
 class InvalidUsage(Exception):
     status_code = 400
@@ -21,54 +21,35 @@ class InvalidUsage(Exception):
 
 @api_blueprint.route('/api/albums')
 def albums():
-    data = []
-    albums = reader.albums
-    for i in range(len(albums) - 1, 0, -2):
-        mand = albums[i - 1]
-        opt = albums[i]
-        data.append((
-            {'name': mand.title, 'artist': mand.artist, 'url' : mand.url, 'image' : mand.image_url},
-            {'name': opt.title, 'artist': opt.artist, 'url' : opt.url, 'image' : opt.image_url}))
-    mand = albums[0]
-    data.append(({'name': mand.title, 'artist': mand.artist, 'url' : mand.url, 'image' : mand.image_url}, None))
+    data = dbreader.get_albums_basic()
     return jsonify(data)
 
 @api_blueprint.route('/api/this-week')
 def this_week():
-    mand, opt = reader.albums[-2:]
-    data = (
-        {'name': mand.title, 'artist': mand.artist, 'url' : mand.url, 'image' : mand.image_url},
-        {'name': opt.title, 'artist': opt.artist, 'url' : opt.url, 'image' : opt.image_url})
+    data = dbreader.get_this_weeks_albums()
     return jsonify(data)
 
 
 @api_blueprint.route('/api/members')
 def members():
-    return jsonify([name for name in reader.people.keys()])
+    data = dbreader.get_members()
+    return jsonify(data)
 
 
 @api_blueprint.route('/api/member/<name>/')
 def member(name):
-    return jsonify({'likeness': reader.get_likeness(name.lower()), 'albums': reader.get_ratings(name.lower())})
+    data = dbreader.get_member_info(name)
+    return jsonify(data)
 
 @api_blueprint.route('/api/albums/<albumname>/')
 def album(albumname):
-    album = reader.album_dict[albumname];
-    data = {
-        'name' : album.title,
-        'artist' : album.artist,
-        'summary' : album.summary,
-        'genres' : album.genres,
-        'styles' : album.styles,
-        'spotify_id' : album.spotify_id,
-        'image' : album.image_url
-    }
-    print(data)
+    albumname = urllib.parse.unquote(albumname)
+    data = dbreader.get_album(albumname)
     return jsonify(data)
 
 @api_blueprint.route('/api/album-averages')
 def album_averages():
-    avgs = [{"title": album.title, "x": i, "y": album.rating, "url": album.url} for (i, album) in enumerate(reader.albums, 1) if album.rating != None]
+    avgs = dbreader.get_album_averages()
     return jsonify(avgs)
 
 @api_blueprint.route('/api/login', methods = ['POST'])
