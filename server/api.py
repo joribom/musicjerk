@@ -6,6 +6,17 @@ from . import dbreader
 api_blueprint = Blueprint('api', __name__)
 
 
+def rebuild_react():
+    # Build react library
+    try:
+        cmd_output = subprocess.check_output(
+            'npm --prefix templates/static/ run build'.split(' ')
+        )
+        return cmd_output
+    except subprocess.CalledProcessError as error:
+        return("Failed to build !\n%s" % str(error.output))
+
+
 class InvalidUsage(Exception):
     status_code = 400
 
@@ -83,7 +94,8 @@ def webhook():
             cmd_output = subprocess.check_output(
                 ['git', 'pull', 'origin', 'master']
             )
-            return jsonify({'msg': str(cmd_output)})
+            build_output = rebuild_react()
+            return jsonify({'msg': str(cmd_output) + '\n' + build_output})
         except subprocess.CalledProcessError as error:
             print("Code deployment failed!\n%s" % str(error.output))
             return jsonify({'msg': str(error.output)})
@@ -100,3 +112,7 @@ def handle_invalid_usage(error):
     )
     response.status_code = error.status_code
     return response
+
+
+# Rebuild react on initial import of file
+rebuild_react()
