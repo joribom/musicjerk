@@ -220,7 +220,6 @@ def album_info_set(cur, album_id):
     command = 'SELECT spotify_id, image_url, summary FROM albums WHERE id=%s'
     cur.execute(command, (album_id,))
     res = fst(cur.fetchone())
-    print(res)
     return all(map(lambda x: bool(x), res)) if res else False
 
 @using_db
