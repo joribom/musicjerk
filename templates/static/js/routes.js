@@ -14,7 +14,7 @@ function AppRouter() {
     <Router>
      <div>
          <div className="header">
-           <h1 className="head-text">BIG Musicjerk</h1>
+           <h1 className="head-text">Big Musicjerk</h1>
          </div>
         <TopBar />
 
