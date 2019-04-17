@@ -1,10 +1,11 @@
-import gspread, os, re
+import gspread
+import re
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
 from threading import Thread, Lock
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 from .externalapi.spotifyreader import get_spotify_data
 from .externalapi.wikireader import get_wiki_info, get_wiki_summary
 from .externalapi.discogsreader import get_genres
@@ -100,7 +101,7 @@ def update_values():
     albums = []
     print("Parsing albums...")
     for row in all_values[2:]:
-        title = re.sub('\([^\)]*\)', '', row[0])
+        title = re.sub(r'\([^\)]*\)', '', row[0])
         if not title:
             break
         artist = row[1]
@@ -108,8 +109,6 @@ def update_values():
         url = make_url(title, artist)
         week = int(index / 2)
         mand = (index == 3) or ((index % 2) == 0)
-        #print(Album(week, mand, title, artist, chosen_by))
-        #hash = str(index)
         album = Album(week, mand, title, artist, chosen_by, url)
         album_id = dbmanager.update_album(album)
         albums.append((album_id, album))
@@ -122,7 +121,6 @@ def update_values():
             best = list(map(str.strip, best_str.split(';'))) if best_str and best_str.strip() != '-' else None
             worst_str = row[col + 2]
             worst = list(map(str.strip, worst_str.split(';'))) if worst_str and worst_str.strip() != '-' else None
-            #print('    ' + str(Rating(hash, uid, rating, best, worst)))
             dbmanager.update_rating(Rating(album_id, uid, rating, best, worst))
         index += 1
     print("Parsing albums finished!")

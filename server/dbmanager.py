@@ -2,6 +2,7 @@ import hashlib, uuid, psycopg2
 from secrets import token_urlsafe # For cookie generation
 
 conn = psycopg2.connect("dbname=musicjerk user=postgres")
+conn.set_client_encoding('UTF-8')
 cur = conn.cursor()
 fst = lambda x: x[0] if x is not None else None
 snd = lambda x: x[1] if x is not None else None
@@ -30,7 +31,6 @@ def get_user_id(cur, username):
 def login(cur, username):
     cur.execute("SELECT uid FROM users WHERE name=%s;", (username.lower(),))
     uid = fst(cur.fetchone())
-    print(uid)
     session = token_urlsafe(16);
     cur.execute("UPDATE users SET session=%s WHERE uid=%s;", (session, uid))
     return uid, session

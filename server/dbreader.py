@@ -1,8 +1,8 @@
 from . import dbupdater
-import psycopg2
 from .dbmanager import using_db as using_db_inner
 
 dbupdater.check_updates()
+
 
 def using_db(func):
     def wrapper(*args, **kwargs):
@@ -12,7 +12,10 @@ def using_db(func):
         return result
     return wrapper
 
-fst = lambda x: x[0] if x is not None else None
+
+def fst(x):
+    return x[0] if x is not None else None
+
 
 @using_db
 def get_albums_basic(cur):
@@ -28,11 +31,18 @@ def get_albums_basic(cur):
         mand = albums[i]
         opt = albums[i + 1]
         data.append((
-            {'name': mand[0], 'artist': mand[1], 'url' : mand[2], 'image' : mand[3]},
-            {'name': opt[0], 'artist': opt[1], 'url' : opt[2], 'image' : opt[3]}))
+            {'name': mand[0], 'artist': mand[1],
+             'url': mand[2], 'image': mand[3]},
+            {'name': opt[0], 'artist': opt[1],
+             'url': opt[2], 'image': opt[3]}
+        ))
     mand = albums[-1]
-    data.append(({'name': mand[0], 'artist': mand[1], 'url' : mand[2], 'image' : mand[3]}, None))
+    data.append((
+        {'name': mand[0], 'artist': mand[1],
+         'url': mand[2], 'image': mand[3]},
+        None))
     return data
+
 
 @using_db
 def get_this_weeks_albums(cur):
@@ -45,8 +55,8 @@ def get_this_weeks_albums(cur):
     cur.execute(command)
     mand, opt = cur.fetchall()
     data = (
-        {'name': mand[0], 'artist': mand[1], 'url' : mand[2], 'image' : mand[3]},
-        {'name': opt[0], 'artist': opt[1], 'url' : opt[2], 'image' : opt[3]})
+        {'name': mand[0], 'artist': mand[1], 'url': mand[2], 'image': mand[3]},
+        {'name': opt[0], 'artist': opt[1], 'url': opt[2], 'image': opt[3]})
     return data
 
 
@@ -60,6 +70,7 @@ def get_members(cur):
     cur.execute(command)
     return list(map(fst, cur.fetchall()))
 
+
 @using_db
 def get_member_info(cur, name):
     command = """
@@ -72,7 +83,9 @@ def get_member_info(cur, name):
     cur.execute(command, (name,))
     ratings = []
     for i, info in enumerate(cur.fetchall()):
-        ratings.append({'y': info[0], 'x': i, 'title': info[1], 'url': info[2]})
+        ratings.append(
+            {'y': info[0], 'x': i, 'title': info[1], 'url': info[2]}
+        )
     data = {'likeness': None, 'albums': ratings}
     return data
 
@@ -84,15 +97,14 @@ def get_album(cur, albumname):
         FROM albums
         WHERE url=%s;
     """
-    print(command)
     cur.execute(command, (albumname,))
     info = cur.fetchone()
-    print(info)
     data = dict(zip([
         'name', 'artist', 'summary', 'genres',
         'styles', 'spotify_id', 'image'
         ], info)) if info is not None else {}
     return data
+
 
 @using_db
 def get_album_averages(cur):
@@ -111,9 +123,6 @@ def get_album_averages(cur):
             "url": info[2]})
     return avgs
 
+
 if __name__ == "__main__":
-    #print(get_albums_basic())
-    #print(get_this_weeks_albums())
-    #print(get_members())
-    #print(
     print(get_album_averages())
