@@ -22,8 +22,10 @@ latest_update = None
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 
+
 def check_updates():
     start_in_thread(update_values)
+
 
 def make_url(title, artist):
     url = '%s-%s' % (title.lower().strip().replace(" ", "_"), artist.lower().strip().replace(" ", "_"))

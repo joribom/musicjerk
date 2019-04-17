@@ -1,8 +1,10 @@
-from flask import Blueprint, jsonify, make_response, redirect, request
+from flask import Blueprint, jsonify, request
+import subprocess
 import urllib.parse
 from . import dbreader
 
 api_blueprint = Blueprint('api', __name__)
+
 
 class InvalidUsage(Exception):
     status_code = 400
@@ -19,10 +21,12 @@ class InvalidUsage(Exception):
         rv['message'] = self.message
         return rv
 
+
 @api_blueprint.route('/api/albums')
 def albums():
     data = dbreader.get_albums_basic()
     return jsonify(data)
+
 
 @api_blueprint.route('/api/this-week')
 def this_week():
@@ -41,20 +45,22 @@ def member(name):
     data = dbreader.get_member_info(name)
     return jsonify(data)
 
+
 @api_blueprint.route('/api/albums/<albumname>/')
 def album(albumname):
     albumname = urllib.parse.unquote(albumname)
     data = dbreader.get_album(albumname)
     return jsonify(data)
 
+
 @api_blueprint.route('/api/album-averages')
 def album_averages():
     avgs = dbreader.get_album_averages()
     return jsonify(avgs)
 
-@api_blueprint.route('/api/login', methods = ['POST'])
+
+@api_blueprint.route('/api/login', methods=['POST'])
 def login():
-    error = None
     if request.method == "POST":
         username = request.form.get('username')
         password = request.form.get('password')
@@ -62,12 +68,35 @@ def login():
     response = jsonify(True)
     return response
 
-@api_blueprint.route('/api/<path:path>', methods = ['POST', 'GET'])
+
+@api_blueprint.route('/api/<path:path>', methods=['POST', 'GET'])
 def error_catch(path):
     raise InvalidUsage("This api page doesn't exist.", status_code=400)
 
+
+@api_blueprint.route('/webhook', methods=['POST'])
+def webhook():
+    payload = request.get_json()
+    if payload.get('ref') == "refs/heads/master":
+        print("Trying to pull new changes from git...")
+        try:
+            cmd_output = subprocess.check_output(
+                ['git', 'pull', 'origin', 'master']
+            )
+            return jsonify({'msg': str(cmd_output)})
+        except subprocess.CalledProcessError as error:
+            print("Code deployment failed!\n%s" % str(error.output))
+            return jsonify({'msg': str(error.output)})
+    else:
+        return jsonify(
+            {'msg': 'Not interested in %s' % str(payload.get('ref'))}
+        )
+
+
 @api_blueprint.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
-    response = jsonify({"error" : {"status" : error.status_code, "message" : error.message}})
+    response = jsonify(
+        {"error": {"status": error.status_code, "message": error.message}}
+    )
     response.status_code = error.status_code
     return response

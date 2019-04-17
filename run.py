@@ -1,8 +1,18 @@
+import os
+import subprocess
 from flask import Flask, send_from_directory
 from werkzeug.serving import run_simple
-import os
 
 PORT = 8000
+
+# Build react library
+try:
+    cmd_output = subprocess.check_output(
+        'npm --prefix templates/static/ run build'.split(' ')
+    )
+except subprocess.CalledProcessError as error:
+    print("Failed to build !\n%s" % str(error.output))
+    exit(1)
 
 fullchain = '/etc/letsencrypt/live/bigmusicjerk.com/fullchain.pem'
 privkey   = '/etc/letsencrypt/live/bigmusicjerk.com/privkey.pem'

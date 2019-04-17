@@ -1,7 +1,7 @@
 from . import dbupdater
 from .dbmanager import using_db as using_db_inner
 
-dbupdater.check_updates()
+dbupdater.update_values()
 
 
 def using_db(func):
