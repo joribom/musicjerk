@@ -1,5 +1,5 @@
 from . import dbupdater
-from .dbmanager import using_db as using_db_inner
+from .dbmanager import using_db as using_db_inner, fst
 
 dbupdater.update_values()
 
@@ -11,10 +11,6 @@ def using_db(func):
         result = new_func(*args, **kwargs)
         return result
     return wrapper
-
-
-def fst(x):
-    return x[0] if x is not None else None
 
 
 @using_db
