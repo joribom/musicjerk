@@ -7,6 +7,14 @@ api_blueprint = Blueprint('api', __name__)
 
 
 def rebuild_react():
+    # Install react dependencies, in case a new one is added
+    try:
+        cmd_output = subprocess.check_output(
+            'npm --prefix templates/static/ install'.split(' ')
+        )
+        return cmd_output
+    except subprocess.CalledProcessError as error:
+        return("Failed to install deps!\n%s" % str(error.output))
     # Build react library
     try:
         cmd_output = subprocess.check_output(
@@ -14,7 +22,7 @@ def rebuild_react():
         )
         return cmd_output
     except subprocess.CalledProcessError as error:
-        return("Failed to build !\n%s" % str(error.output))
+        return("Failed to build!\n%s" % str(error.output))
 
 
 class InvalidUsage(Exception):
