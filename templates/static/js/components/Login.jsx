@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -72,6 +73,9 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
+    this.state = {
+      redirect: false
+    }
   }
 
   onSubmit(event){
@@ -81,15 +85,13 @@ class Login extends Component {
       method: 'POST',
       body: data,
     }).then(response => {
-      console.log(response);
       response.json().then(data => {
-          console.log(data);
           if (data['auth']){
             const { cookies } = this.props;
-            console.log(event.target);
             cookies.set('uid', data['data']['uid'], { path: '/' });
             cookies.set('session', data['data']['session'], { path: '/' });
             cookies.set('username', data['data']['username'], { path: '/' });
+            this.setState({redirect: true});
           }
       })
     });
@@ -97,9 +99,11 @@ class Login extends Component {
 
   render(){
     const { classes } = this.props;
+    const { redirect } = this.state;
 
     return (
       <div className={classes.main}>
+        {redirect && (<Redirect to='/'/>)}
         <MuiThemeProvider theme={lightTheme}>
         <Paper className={classes.paper}>
           <Avatar className={classes.avatar}>

@@ -38,13 +38,19 @@ const styles = theme => ({
 
 function TopBar(props) {
     const { classes } = props;
-
+    const { cookies } = props;
+    let user_handling;
+    if (cookies.get('uid') == ''){
+        user_handling = <NavLink to="/login">Login</NavLink>;
+    } else {
+        user_handling = <NavLink to="/logout">Logout</NavLink>;
+    }
     return (
       <div className="topnav">
         <NavLink exact={true} to="/">Home</NavLink>
         <NavLink to="/albums">Albums</NavLink>
         <NavLink to="/lyrics">Lyrics</NavLink>
-        <NavLink to="/login">Login</NavLink>
+        {user_handling}
         <div className={classes.searchDiv}>
           <Input className={classes.searchInput} type="text" placeholder="Search..."/>
           <Button className={classes.searchButton} type="submit">

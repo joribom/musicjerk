@@ -11,7 +11,7 @@ const styles = theme => ({
 function Header(props) {
     const { classes } = props;
     const { cookies } = props;
-    if (cookies.get('username') != null){
+    if (cookies.get('username') != ''){
       return (
         <div className="header">
           <h1 className={classes.text}>Big Musicjerk, logged in as {cookies.get('username')}</h1>
