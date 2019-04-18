@@ -3,3 +3,4 @@ data/*.png
 *.json
 templates/static/node_modules
 *bundle.js
+cache
