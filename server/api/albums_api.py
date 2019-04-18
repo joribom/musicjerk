@@ -2,8 +2,9 @@ from flask import Blueprint, jsonify, request
 import subprocess
 import urllib.parse
 from .dbutil import dbreader
+from . import api_blueprint
 
-api_blueprint = Blueprint('api', __name__)
+# api_blueprint = Blueprint('api', __name__)
 
 
 def rebuild_react():
