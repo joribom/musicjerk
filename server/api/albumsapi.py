@@ -11,7 +11,6 @@ def rebuild_react():
         cmd_output = subprocess.check_output(
             'npm --prefix templates/static/ install'.split(' ')
         )
-        return cmd_output
     except subprocess.CalledProcessError as error:
         return("Failed to install deps!\n%s" % str(error.output))
     # Build react library
