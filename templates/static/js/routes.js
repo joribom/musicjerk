@@ -1,5 +1,7 @@
 import React from 'react';
+import { CookiesProvider, withCookies } from 'react-cookie';
 import { BrowserRouter as Router, Route, Link, NavLink } from 'react-router-dom';
+import Header from './components/Header'
 import Home from './components/Home';
 import Login from './components/Login';
 import Albums from './components/Albums';
@@ -8,24 +10,24 @@ import AlbumPage from './components/AlbumPage';
 import MemberPage from './components/MemberPage';
 // import more components
 
-function AppRouter() {
+function AppRouter(props) {
   return (
 //export default (
-    <Router>
-     <div>
-         <div className="header">
-           <h1 className="head-text">Big Musicjerk</h1>
-         </div>
-        <TopBar />
+    <CookiesProvider>
+      <Router>
+        <div>
+          <Header cookies={props.cookies} />
+          <TopBar cookies={props.cookies} />
 
-        <Route exact path="/" component={Home} />
-        <Route path="/login" component={Login} />
-        <Route exact path="/albums" component={Albums} />
-        <Route path="/albums/:id" component={AlbumPage} />
-        <Route path="/member/:id" component={MemberPage} />
-     </div>
-    </Router>
+          <Route exact path="/" component={Home} />
+          <Route path="/login" render={() => <Login cookies={props.cookies} />}/>
+          <Route exact path="/albums" component={Albums} />
+          <Route path="/albums/:id" component={AlbumPage} />
+          <Route path="/member/:id" component={MemberPage} />
+        </div>
+      </Router>
+    </CookiesProvider>
   );
 }
 
-export default AppRouter;
+export default withCookies(AppRouter);

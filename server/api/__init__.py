@@ -2,4 +2,4 @@ from flask import Blueprint
 
 api_blueprint = Blueprint('api', __name__)
 
-from . import albums_api
+from . import albumsapi, authapi

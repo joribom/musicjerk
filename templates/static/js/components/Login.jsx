@@ -69,6 +69,11 @@ const styles = theme => ({
 
 class Login extends Component {
 
+  constructor(props) {
+    super(props);
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+
   onSubmit(event){
     event.preventDefault();
     const data = new FormData(event.target);
@@ -77,7 +82,16 @@ class Login extends Component {
       body: data,
     }).then(response => {
       console.log(response);
-      response.json().then(data => {console.log(data)})
+      response.json().then(data => {
+          console.log(data);
+          if (data['auth']){
+            const { cookies } = this.props;
+            console.log(event.target);
+            cookies.set('uid', data['data']['uid'], { path: '/' });
+            cookies.set('session', data['data']['session'], { path: '/' });
+            cookies.set('username', data['data']['username'], { path: '/' });
+          }
+      })
     });
   }
 

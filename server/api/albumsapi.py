@@ -1,10 +1,8 @@
-from flask import Blueprint, jsonify, request
+from flask import jsonify, request
 import subprocess
 import urllib.parse
 from .dbutil import dbreader
 from . import api_blueprint
-
-# api_blueprint = Blueprint('api', __name__)
 
 
 def rebuild_react():
@@ -77,16 +75,6 @@ def album(albumname):
 def album_averages():
     avgs = dbreader.get_album_averages()
     return jsonify(avgs)
-
-
-@api_blueprint.route('/api/login', methods=['POST'])
-def login():
-    if request.method == "POST":
-        username = request.form.get('username')
-        password = request.form.get('password')
-        print(username, password)
-    response = jsonify(True)
-    return response
 
 
 @api_blueprint.route('/api/<path:path>', methods=['POST', 'GET'])
