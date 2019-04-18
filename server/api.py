@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 import subprocess
 import urllib.parse
-from . import dbreader
+from .dbutil import dbreader
 
 api_blueprint = Blueprint('api', __name__)
 
