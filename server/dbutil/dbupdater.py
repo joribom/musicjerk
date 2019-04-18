@@ -6,9 +6,9 @@ from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
 from threading import Thread, Lock
 from collections import namedtuple
-from .externalapi.spotifyreader import get_spotify_data
-from .externalapi.wikireader import get_wiki_info, get_wiki_summary
-from .externalapi.discogsreader import get_genres
+from server.externalapi.spotifyreader import get_spotify_data
+from server.externalapi.wikireader import get_wiki_info, get_wiki_summary
+from server.externalapi.discogsreader import get_genres
 from . import dbmanager
 
 Album = namedtuple('Album', 'week mandatory title artist selected_by url')
@@ -28,41 +28,57 @@ def check_updates():
 
 
 def make_url(title, artist):
-    url = '%s-%s' % (title.lower().strip().replace(" ", "_"), artist.lower().strip().replace(" ", "_"))
-    url = re.sub('[^a-zA-Z0-9\_\-]', '', url)
+    url = '%s-%s' % (
+        title.lower().strip().replace(" ", "_"),
+        artist.lower().strip().replace(" ", "_")
+    )
+    url = re.sub(r'[^a-zA-Z0-9\_\-]', '', url)
     return url
+
+
+def value_set(string):
+    return string and string.strip() != '-'
+
 
 def start_in_thread(func, *args):
     thread = Thread(target=func, args=tuple(args))
     thread.daemon = True
     thread.start()
 
+
 def update_api_values(albums):
     for album_id, album in albums:
         if dbmanager.album_info_set(album_id):
             continue
-        print("Fetching info about %s - %s..." % (str(album.artist), str(album.title)))
+        print("Fetching info about %s - %s..." % (
+            str(album.artist), str(album.title)
+        ))
         if album.title is not None and album.artist is not None:
             spotify_id, image_url = get_spotify_data(album.title, album.artist)
             if image_url is None:
                 summary, image_url = get_wiki_info(album.title, album.artist)
             else:
                 summary = get_wiki_summary(album.title, album.artist)
-            dbmanager.update_album_info(album_id, spotify_id, image_url, summary)
+            dbmanager.update_album_info(
+                album_id, spotify_id,
+                image_url, summary
+            )
 
 
 def update_slow_api_values(albums):
     for album_id, album in albums:
         if dbmanager.album_genres_set(album_id):
             continue
-        print("Fetching slow info about %s - %s..." % (str(album.artist), str(album.title)))
+        print("Fetching slow info about %s - %s..." % (
+            str(album.artist), str(album.title)
+        ))
         genres, styles = get_genres(album.title, album.artist)
         dbmanager.update_album_genres(album_id, genres, styles)
 
 
 def update_required():
     global sheet, latest_update, latest_update_check
-    if datetime.now(tzlocal()) - latest_update_check < timedelta(minutes = 5):
+    if datetime.now(tzlocal()) - latest_update_check < timedelta(minutes=5):
         return False
     latest_change_time = parse_time(sheet.cell(1, 1).value)
     latest_update_check = datetime.now(tzlocal())
@@ -73,9 +89,12 @@ def update_required():
 
 def connect():
     global sheet, scope
-    creds = ServiceAccountCredentials.from_json_keyfile_name('client_secret.json', scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name(
+        'client_secret.json', scope
+    )
     client = gspread.authorize(creds)
     sheet = client.open("Musicjerk's big album sheet").sheet1
+
 
 def update_values():
     global updating, sheet, latest_update, latest_update_check
@@ -89,7 +108,6 @@ def update_values():
     connect()
     all_values = sheet.get_all_values()
     top_row = all_values[0]
-    col_headers = all_values[1]
     users = {}
     print("Parsing users...")
     for cell in top_row[5:]:
@@ -117,12 +135,14 @@ def update_values():
         for col in range(7, len(row), 3):
             name = top_row[col].lower()
             uid = dbmanager.get_user_uid(name)
-            rating_str = row[col]
-            rating = int(rating_str) if rating_str and rating_str.strip() != '-' else None
-            best_str = row[col + 1]
-            best = list(map(str.strip, best_str.split(';'))) if best_str and best_str.strip() != '-' else None
-            worst_str = row[col + 2]
-            worst = list(map(str.strip, worst_str.split(';'))) if worst_str and worst_str.strip() != '-' else None
+            rating, worst, best = None, None, None
+            rating_str, best_str, worst_str = row[col:col+3]
+            if value_set(rating_str):
+                rating = int(rating_str)
+            if value_set(best_str):
+                best = list(map(str.strip, best_str.split(';')))
+            if value_set(worst_str):
+                worst = list(map(str.strip, worst_str.split(';')))
             dbmanager.update_rating(Rating(album_id, uid, rating, best, worst))
         index += 1
     print("Parsing albums finished!")
