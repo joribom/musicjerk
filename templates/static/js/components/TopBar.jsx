@@ -4,6 +4,7 @@ import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import Search from '@material-ui/icons/Search';
 import withStyles from '@material-ui/core/styles/withStyles';
+import authenticator from './Authenticator';
 
 const styles = theme => ({
     searchDiv: {
@@ -36,14 +37,19 @@ const styles = theme => ({
     }
 });
 
-function TopBar(props) {
-    const { classes } = props;
-    const { cookies } = props;
+class TopBar extends Component {
+  constructor (props) {
+    super(props);
+    this.classes = props.classes;
+    authenticator.addStatusListener(this.forceUpdate, this);
+  }
+
+  render(){
     let user_handling;
-    if (cookies.get('uid') == ''){
-        user_handling = <NavLink to="/login">Login</NavLink>;
+    if (authenticator.validated()){
+      user_handling = <NavLink to="/logout">Logout</NavLink>;
     } else {
-        user_handling = <NavLink to="/logout">Logout</NavLink>;
+      user_handling = <NavLink to="/login">Login</NavLink>;
     }
     return (
       <div className="topnav">
@@ -51,14 +57,15 @@ function TopBar(props) {
         <NavLink to="/albums">Albums</NavLink>
         <NavLink to="/lyrics">Lyrics</NavLink>
         {user_handling}
-        <div className={classes.searchDiv}>
-          <Input className={classes.searchInput} type="text" placeholder="Search..."/>
-          <Button className={classes.searchButton} type="submit">
+        <div className={this.classes.searchDiv}>
+          <Input className={this.classes.searchInput} type="text" placeholder="Search..."/>
+          <Button className={this.classes.searchButton} type="submit">
             <Search/>
           </Button>
         </div>
       </div>
     );
+  }
 }
 
 export default withStyles(styles)(TopBar);

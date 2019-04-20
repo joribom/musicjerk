@@ -6,6 +6,7 @@ from . import api_blueprint
 
 @api_blueprint.route('/api/login', methods=['POST'])
 def login():
+    print(request.form)
     username = request.form.get('username')
     password = request.form.get('password')
     if dbauth.check_password(username, password):
@@ -30,10 +31,9 @@ def verify_login():
 
 @api_blueprint.route('/api/validate', methods=['POST'])
 def validate():
-    jsondata = request.json.get('data', {})
-    uid = jsondata.get('uid')
-    session = jsondata.get('session')
-    if uid is None or session is None:
+    uid = request.json.get('uid')
+    session = request.json.get('session')
+    if uid == 'null' or session == 'null':
         return jsonify({'authenticated': False})
     authenticated, username = dbauth.verify_login(uid, session)
     print(authenticated)

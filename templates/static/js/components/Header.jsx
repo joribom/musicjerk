@@ -9,24 +9,26 @@ const styles = theme => ({
 });
 
 
-function Header(props) {
-    const { classes } = props;
-    const { cookies } = props;
-    console.log('Checking validation...');
-    console.log(authenticator.validated());
-    if (authenticator.validated()){
-      return (
-        <div className="header">
-          <h1 className={classes.text}>Big Musicjerk, logged in as {authenticator.}</h1>
-        </div>
-      )
-  } else {
+class Header extends Component {
+
+  constructor(props){
+    super(props);
+    this.classes = props.classes;
+    authenticator.addStatusListener(this.forceUpdate, this);
+  }
+
+  render() {
     return (
       <div className="header">
-        <h1 className={classes.text}>Big Musicjerk</h1>
+          <h1 className={this.classes.text}>Big Musicjerk{
+              authenticator.validated()
+              ? (', logged in as ' + authenticator.username())
+              : ''
+          }</h1>
       </div>
-    )
+      )
   }
 }
+
 
 export default withStyles(styles)(Header);

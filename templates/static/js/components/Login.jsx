@@ -14,6 +14,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import withStyles from '@material-ui/core/styles/withStyles';
+import authenticator from './Authenticator';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -73,37 +74,24 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
-    this.state = {
-      redirect: false
-    }
+    authenticator.addStatusListener(this.forceUpdate, this);
   }
 
   onSubmit(event){
     event.preventDefault();
     const data = new FormData(event.target);
-    fetch('/api/login', {
-      method: 'POST',
-      body: data,
-    }).then(response => {
-      response.json().then(data => {
-          if (data['auth']){
-            const { cookies } = this.props;
-            cookies.set('uid', data['data']['uid'], { path: '/' });
-            cookies.set('session', data['data']['session'], { path: '/' });
-            cookies.set('username', data['data']['username'], { path: '/' });
-            this.setState({redirect: true});
-          }
-      })
-    });
+    authenticator.signIn(data);
   }
 
   render(){
     const { classes } = this.props;
-    const { redirect } = this.state;
+
+    if (authenticator.validated()){
+      return (<Redirect to='/'/>);
+    }
 
     return (
       <div className={classes.main}>
-        {redirect && (<Redirect to='/'/>)}
         <MuiThemeProvider theme={lightTheme}>
         <Paper className={classes.paper}>
           <Avatar className={classes.avatar}>

@@ -1,13 +1,11 @@
-import React from 'react'
-import { Redirect } from 'react-router-dom'
+import React from 'react';
+import { Redirect } from 'react-router-dom';
+import authenticator from './Authenticator';
 
 function Logout(props){
     var { cookies } = props;
-
-    cookies.set('uid', '', { path: '/' });
-    cookies.set('session', '', { path: '/' });
-    cookies.set('username', '', { path: '/' });
-
+    console.log('In here!');
+    authenticator.signOut()
     return <Redirect to='/' />
 }
 
