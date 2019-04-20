@@ -47,9 +47,9 @@ def get_tokens(cur, uid):
 
 @using_db
 def verify_login(cur, uid, session):
-    cur.execute("SELECT session FROM users WHERE uid=%s;", (uid,))
+    cur.execute("SELECT session, name FROM users WHERE uid=%s;", (uid,))
     res = cur.fetchone()
-    return session is not None and fst(res) == session
+    return (session is not None and res['session'] == session), res['name']
 
 
 @using_db

@@ -1,7 +1,22 @@
+import os
+import sys
+import getopt
 from . import dbupdater
 from .dbmanager import using_db as using_db_inner, fst
 
-dbupdater.update_values()
+
+debug = False
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "", ["debug"])
+    for opt, arg in opts:
+        if opt == '--debug':
+            debug = True
+except getopt.GetoptError as err:
+    print(str(err))
+    sys.exit(2)
+
+if not debug:
+    dbupdater.update_values()
 
 
 def using_db(func):

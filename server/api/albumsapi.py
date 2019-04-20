@@ -1,6 +1,9 @@
-from flask import jsonify, request
+import os
+import getopt
+import sys
 import subprocess
 import urllib.parse
+from flask import jsonify, request
 from .dbutil import dbreader
 from . import api_blueprint
 
@@ -110,5 +113,15 @@ def handle_invalid_usage(error):
     return response
 
 
-# Rebuild react on initial import of file
-rebuild_react()
+debug = False
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "", ["debug"])
+    for opt, arg in opts:
+        if opt == '--debug':
+            debug = True
+except getopt.GetoptError as err:
+    print(str(err))
+    sys.exit(2)
+
+if not debug:
+    rebuild_react()

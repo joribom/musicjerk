@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
+import authenticator from './Authenticator'
 
 const styles = theme => ({
     text: {
@@ -11,10 +12,12 @@ const styles = theme => ({
 function Header(props) {
     const { classes } = props;
     const { cookies } = props;
-    if (cookies.get('username') != ''){
+    console.log('Checking validation...');
+    console.log(authenticator.validated());
+    if (authenticator.validated()){
       return (
         <div className="header">
-          <h1 className={classes.text}>Big Musicjerk, logged in as {cookies.get('username')}</h1>
+          <h1 className={classes.text}>Big Musicjerk, logged in as {authenticator.}</h1>
         </div>
       )
   } else {
