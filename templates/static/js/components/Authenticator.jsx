@@ -33,8 +33,9 @@ class Authenticator {
           this.uid = uid;
           this.session = session;
           this._validated = true;
-          this.statusChanged();
         }
+        this._checked = true;
+        this.statusChanged();
       })
     })
   }
@@ -54,6 +55,10 @@ class Authenticator {
 
   validated(){
     return this._validated;
+  }
+
+  checked(){
+    return this._checked;
   }
 
   username(){

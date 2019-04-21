@@ -8,6 +8,7 @@ import Logout from './components/Logout';
 import Albums from './components/Albums';
 import TopBar from './components/TopBar';
 import AlbumPage from './components/AlbumPage';
+import NewAlbum from './components/NewAlbum';
 import MemberPage from './components/MemberPage';
 // import more components
 
@@ -23,6 +24,7 @@ function AppRouter(props) {
           <Route exact path="/" component={Home} />
           <Route path="/login" render={() => <Login cookies={props.cookies} />}/>
           <Route path="/logout" render={() => <Logout cookies={props.cookies} />}/>
+          <Route path="/newalbum" render={() => <NewAlbum cookies={props.cookies} />}/>
           <Route exact path="/albums" component={Albums} />
           <Route path="/albums/:id" component={AlbumPage} />
           <Route path="/member/:id" component={MemberPage} />
