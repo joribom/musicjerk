@@ -1,4 +1,3 @@
-import os
 import getopt
 import sys
 import subprocess

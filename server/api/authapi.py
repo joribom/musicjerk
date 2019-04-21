@@ -1,4 +1,3 @@
-import json
 from flask import jsonify, request
 from .dbutil import dbauth
 from . import api_blueprint

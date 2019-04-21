@@ -1,4 +1,3 @@
-import os
 import sys
 import getopt
 from . import dbupdater
