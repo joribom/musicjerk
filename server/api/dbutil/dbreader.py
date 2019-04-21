@@ -119,7 +119,7 @@ def get_album(cur, albumname):
 @using_db
 def get_album_averages(cur):
     command = """
-        SELECT title, score, url
+        SELECT title, score, url, image_url, summary
         FROM albums
         ORDER BY week ASC, mandatory DESC;
     """
@@ -130,7 +130,9 @@ def get_album_averages(cur):
             "title": info[0],
             "x": i,
             "y": round(float(info[1]), 2) if info[1] is not None else None,
-            "url": info[2]})
+            "url": info[2],
+            "image_url": info[3],
+            "summary": info[4]})
     return avgs
 
 
