@@ -107,21 +107,65 @@ class NewAlbum extends Component {
             Add new album
           </Typography>
           <form className={classes.form} onSubmit={this.onSubmit}>
-            <FormControl margin="normal">
-              <InputLabel className={classes.input} htmlFor="title">Album title</InputLabel>
-              <Input className={classes.input} classes={{underline: classes.underline}} id="title" name="title" autoComplete="title" autoFocus />
-            </FormControl>
-            <Button
-              variant="contained"
-              color="secondary"
-              className={classes.submit}
-            >
-              Search on Spotify
-            </Button>
-            <FormControl margin="normal" fullWidth>
-              <InputLabel className={classes.input} htmlFor="artist">Artist</InputLabel>
-              <Input className={classes.input} classes={{underline: classes.underline}} name="artist" type="artist" id="artist" autoComplete="artist" />
-            </FormControl>
+            <div style={{display:'flex'}}>
+              <div style={{width:'50%'}}>
+                <FormControl margin="normal" style={{width: '100%'}}>
+                  <InputLabel className={classes.input} htmlFor="title">Album title</InputLabel>
+                  <Input className={classes.input} classes={{underline: classes.underline}} id="title" name="title" autoComplete="title" autoFocus />
+                </FormControl>
+                <br/>
+                <FormControl margin="normal" style={{width: '100%'}}>
+                  <InputLabel className={classes.input} htmlFor="artist">Artist</InputLabel>
+                  <Input className={classes.input} classes={{underline: classes.underline}} name="artist" type="artist" id="artist" autoComplete="artist" />
+                </FormControl>
+                <br/>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  className={classes.submit}
+                >
+                  Search on Spotify
+                </Button>
+                <br/>
+                <FormControl margin="normal" style={{width: '100%'}}>
+                  <InputLabel className={classes.input} htmlFor="title">Spotify id</InputLabel>
+                  <Input className={classes.input} classes={{underline: classes.underline}} id="spotifyid" name="spotifyid" autoComplete="spotifyid" autoFocus />
+                </FormControl>
+                <br/>
+                <FormControl margin="normal" style={{width: '100%'}}>
+                  <InputLabel className={classes.input} htmlFor="artist">Image url</InputLabel>
+                  <Input className={classes.input} classes={{underline: classes.underline}} name="imageurl" type="imageurl" id="imageurl" autoComplete="imageurl" />
+                </FormControl>
+                <br/>
+              </div>
+              <div style={{width:'50%', display:'flex', flexDirection:'column', alignItems:'center'}}>
+                <h2 className={classes.input}>Is this your album?</h2>
+                <br/>
+                <img src='https://i.scdn.co/image/36ad5132eee494bb519cd43e70fafe427cab95de' style={{width:'75%', height:'75%'}}/>
+                <div style={{display:'flex', width:'100%'}}>
+                  <div style={{width:'50%', display:'flex', justifyContent:'center'}}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      className={classes.submit}
+                      style={{width:'70%'}}
+                    >
+                      Accept
+                    </Button>
+                  </div>
+                  <div style={{width:'50%', display:'flex', justifyContent:'center'}}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      className={classes.submit}
+                      style={{width:'70%'}}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Button
               type="submit"
               fullWidth
@@ -129,7 +173,7 @@ class NewAlbum extends Component {
               color="secondary"
               className={classes.submit}
             >
-              Sign in
+              Add album
             </Button>
           </form>
         </Paper>

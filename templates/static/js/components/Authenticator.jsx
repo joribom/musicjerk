@@ -93,9 +93,9 @@ class Authenticator {
   }
 
   updateCookies(){
-  Cookies.set('uid', this.uid, { path: '/' });
-  Cookies.set('session', this.session, { path: '/' });
-  Cookies.set('username', this._username, { path: '/' });
+    Cookies.set('uid', this.uid, { path: '/' });
+    Cookies.set('session', this.session, { path: '/' });
+    Cookies.set('username', this._username, { path: '/' });
   }
 }
 

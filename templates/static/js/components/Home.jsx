@@ -17,7 +17,7 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        overflow: 'hidden',
+        overflowY: 'hidden',
         textAlign: 'center',
     },
 

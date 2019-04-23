@@ -23,7 +23,15 @@ const config = {
    test: /\.css$/,
    loader: 'style-loader!css-loader?modules'
   }]
- }
+  },
+  externals: {
+    moment: 'moment'
+  }
 };
+
+if (process.env.NODE_ENV = "production"){
+  config.mode = "production";
+  config.devtool = undefined;
+}
 
 module.exports = config;
