@@ -77,12 +77,62 @@ class NewAlbum extends Component {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
     authenticator.addStatusListener(this.forceUpdate, this);
+    this.state = {
+      suggested: false,
+      accepted: false,
+      canceled: false,
+      title: '',
+      artist: '',
+      spotify_id: null,
+      image_url: null,
+    };
+    this.spotifySearch = this.spotifySearch.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    this.setState({
+      [name]: value
+    });
   }
 
   onSubmit(event){
     event.preventDefault();
     const data = new FormData(event.target);
     authenticator.signIn(data);
+  }
+
+  spotifySearch(){
+    const input = {
+      title: this.state.title,
+      artist: this.state.artist
+    };
+    fetch('/api/spotify_search', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(input),
+    }).then(response => {
+      response.json().then(data => {
+        const spotify_id = data['spotify_id'];
+        const image_url = data['image_url'];
+        if (spotify_id != null){
+          this.setState((state, props) => {
+            return {
+              suggested: true,
+              accepted: false,
+              canceled: false,
+              spotify_id: spotify_id,
+              image_url: image_url,
+            };
+          });
+        }
+      })
+    })
   }
 
   render(){
@@ -111,18 +161,19 @@ class NewAlbum extends Component {
               <div style={{width:'50%'}}>
                 <FormControl margin="normal" style={{width: '100%'}}>
                   <InputLabel className={classes.input} htmlFor="title">Album title</InputLabel>
-                  <Input className={classes.input} classes={{underline: classes.underline}} id="title" name="title" autoComplete="title" autoFocus />
+                  <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} ref={this.title} id="title" name="title" autoComplete="title" autoFocus />
                 </FormControl>
                 <br/>
                 <FormControl margin="normal" style={{width: '100%'}}>
                   <InputLabel className={classes.input} htmlFor="artist">Artist</InputLabel>
-                  <Input className={classes.input} classes={{underline: classes.underline}} name="artist" type="artist" id="artist" autoComplete="artist" />
+                  <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} ref={this.artist} name="artist" type="artist" id="artist" autoComplete="artist" />
                 </FormControl>
                 <br/>
                 <Button
                   variant="contained"
                   color="secondary"
                   className={classes.submit}
+                  onClick={this.spotifySearch}
                 >
                   Search on Spotify
                 </Button>
@@ -138,33 +189,35 @@ class NewAlbum extends Component {
                 </FormControl>
                 <br/>
               </div>
-              <div style={{width:'50%', display:'flex', flexDirection:'column', alignItems:'center'}}>
-                <h2 className={classes.input}>Is this your album?</h2>
-                <br/>
-                <img src='https://i.scdn.co/image/36ad5132eee494bb519cd43e70fafe427cab95de' style={{width:'75%', height:'75%'}}/>
-                <div style={{display:'flex', width:'100%'}}>
-                  <div style={{width:'50%', display:'flex', justifyContent:'center'}}>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      className={classes.submit}
-                      style={{width:'70%'}}
-                    >
-                      Accept
-                    </Button>
-                  </div>
-                  <div style={{width:'50%', display:'flex', justifyContent:'center'}}>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      className={classes.submit}
-                      style={{width:'70%'}}
-                    >
-                      Cancel
-                    </Button>
+              {this.state.suggested && !this.state.accepted && !this.state.canceled &&
+                <div style={{width:'50%', display:'flex', flexDirection:'column', alignItems:'center'}}>
+                  <h2 className={classes.input}>Is this your album?</h2>
+                  <br/>
+                  <img src={this.state.image_url} style={{width:'75%', height:'75%'}}/>
+                  <div style={{display:'flex', width:'100%'}}>
+                    <div style={{width:'50%', display:'flex', justifyContent:'center'}}>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        className={classes.submit}
+                        style={{width:'70%'}}
+                      >
+                        Accept
+                      </Button>
+                    </div>
+                    <div style={{width:'50%', display:'flex', justifyContent:'center'}}>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        className={classes.submit}
+                        style={{width:'70%'}}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              }
             </div>
             <Button
               type="submit"

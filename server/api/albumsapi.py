@@ -5,6 +5,7 @@ import urllib.parse
 from flask import jsonify, request
 from .dbutil import dbreader
 from . import api_blueprint
+from server.externalapi.spotifyreader import get_spotify_data
 
 
 def rebuild_react():
@@ -82,6 +83,20 @@ def album_averages():
 def error_catch(path):
     raise InvalidUsage("This api page doesn't exist.", status_code=400)
 
+
+@api_blueprint.route('/api/spotify_search', methods=['POST'])
+def spotify_search():
+    title = request.json.get('title')
+    artist = request.json.get('artist')
+    print("Searching spotify for:")
+    print(title)
+    print(artist)
+    spotify_id, image_url = get_spotify_data(title, artist)
+    data = {
+        'spotify_id': spotify_id,
+        'image_url': image_url
+    }
+    return jsonify(data)
 
 @api_blueprint.route('/webhook', methods=['POST'])
 def webhook():
