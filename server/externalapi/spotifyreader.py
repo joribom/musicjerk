@@ -50,4 +50,4 @@ def get_spotify_data(album, artist):
         )
         return ret
     except (KeyError, IndexError):
-        return None, None
+        return None, None, None, None
