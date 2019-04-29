@@ -88,15 +88,15 @@ def error_catch(path):
 def spotify_search():
     title = request.json.get('title')
     artist = request.json.get('artist')
-    print("Searching spotify for:")
-    print(title)
-    print(artist)
-    spotify_id, image_url = get_spotify_data(title, artist)
+    title, artist, spotify_id, image_url = get_spotify_data(title, artist)
     data = {
+        'title': title,
+        'artist': artist,
         'spotify_id': spotify_id,
         'image_url': image_url
     }
     return jsonify(data)
+
 
 @api_blueprint.route('/webhook', methods=['POST'])
 def webhook():

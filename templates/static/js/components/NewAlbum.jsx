@@ -83,11 +83,12 @@ class NewAlbum extends Component {
       canceled: false,
       title: '',
       artist: '',
-      spotify_id: null,
-      image_url: null,
+      spotify_id: '',
+      image_url: '',
     };
     this.spotifySearch = this.spotifySearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this._handleKeyDown = this._handleKeyDown.bind(this);
   }
 
   handleChange(event) {
@@ -97,6 +98,12 @@ class NewAlbum extends Component {
     this.setState({
       [name]: value
     });
+  }
+
+  _handleKeyDown(e){
+    if (e.key === 'Enter') {
+      this.spotifySearch();
+    }
   }
 
   onSubmit(event){
@@ -118,14 +125,19 @@ class NewAlbum extends Component {
       body: JSON.stringify(input),
     }).then(response => {
       response.json().then(data => {
+        const title = data['title'];
+        const artist = data['artist'];
         const spotify_id = data['spotify_id'];
         const image_url = data['image_url'];
+        console.log(data);
         if (spotify_id != null){
           this.setState((state, props) => {
             return {
               suggested: true,
               accepted: false,
               canceled: false,
+              title: title,
+              artist: artist,
               spotify_id: spotify_id,
               image_url: image_url,
             };
@@ -161,12 +173,18 @@ class NewAlbum extends Component {
               <div style={{width:'50%'}}>
                 <FormControl margin="normal" style={{width: '100%'}}>
                   <InputLabel className={classes.input} htmlFor="title">Album title</InputLabel>
-                  <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} ref={this.title} id="title" name="title" autoComplete="title" autoFocus />
+                  { this.state.accepted
+                    ? <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} onKeyDown={this._handleKeyDown} value={this.state.title} ref={this.title} id="title" name="title" autoComplete="title" autoFocus disabled/>
+                    : <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} onKeyDown={this._handleKeyDown} value={this.state.title} ref={this.title} id="title" name="title" autoComplete="title" autoFocus/>
+                  }
                 </FormControl>
                 <br/>
                 <FormControl margin="normal" style={{width: '100%'}}>
                   <InputLabel className={classes.input} htmlFor="artist">Artist</InputLabel>
-                  <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} ref={this.artist} name="artist" type="artist" id="artist" autoComplete="artist" />
+                  { this.state.accepted
+                    ? <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} onKeyDown={this._handleKeyDown} value={this.state.artist} ref={this.artist} name="artist" type="artist" id="artist" autoComplete="artist" disabled/>
+                    : <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} onKeyDown={this._handleKeyDown} value={this.state.artist} ref={this.artist} name="artist" type="artist" id="artist" autoComplete="artist"/>
+                  }
                 </FormControl>
                 <br/>
                 <Button
@@ -180,12 +198,15 @@ class NewAlbum extends Component {
                 <br/>
                 <FormControl margin="normal" style={{width: '100%'}}>
                   <InputLabel className={classes.input} htmlFor="title">Spotify id</InputLabel>
-                  <Input className={classes.input} classes={{underline: classes.underline}} id="spotifyid" name="spotifyid" autoComplete="spotifyid" autoFocus />
+                  { this.state.accepted
+                    ? <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} value={this.state.spotify_id} ref={this.spotify_id}  id="spotify_id" name="spotify_id" autoComplete="spotify_id" disabled/>
+                    : <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} value={this.state.spotify_id} ref={this.spotify_id}  id="spotify_id" name="spotify_id" autoComplete="spotify_id"/>
+                  }
                 </FormControl>
                 <br/>
                 <FormControl margin="normal" style={{width: '100%'}}>
                   <InputLabel className={classes.input} htmlFor="artist">Image url</InputLabel>
-                  <Input className={classes.input} classes={{underline: classes.underline}} name="imageurl" type="imageurl" id="imageurl" autoComplete="imageurl" />
+                  <Input className={classes.input} classes={{underline: classes.underline}} onChange={this.handleChange} value={this.state.image_url} ref={this.image_url} name="image_url" type="image_url" id="image_url" autoComplete="image_url"/>
                 </FormControl>
                 <br/>
               </div>
@@ -201,6 +222,7 @@ class NewAlbum extends Component {
                         color="secondary"
                         className={classes.submit}
                         style={{width:'70%'}}
+                        onClick={() => {this.setState({accepted:true})}}
                       >
                         Accept
                       </Button>

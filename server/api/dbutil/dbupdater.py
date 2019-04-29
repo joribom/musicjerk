@@ -54,7 +54,8 @@ def update_api_values(albums):
             str(album.artist), str(album.title)
         ))
         if album.title is not None and album.artist is not None:
-            spotify_id, image_url = get_spotify_data(album.title, album.artist)
+            _, _, spotify_id, image_url = get_spotify_data(album.title,
+                                                           album.artist)
             if image_url is None:
                 summary, image_url = get_wiki_info(album.title, album.artist)
             else:
