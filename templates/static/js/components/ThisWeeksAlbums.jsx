@@ -10,8 +10,10 @@ const styles = theme => ({
     },
 
     currentAlbumImage: {
-        height: '400px',
-        width: '400px',
+      width: '70%',
+      height: 'auto',
+      //height: '400px',
+      //width: '400px',
     },
 
     albumHeader: {
@@ -89,19 +91,13 @@ class ThisWeeksAlbums extends Component {
                     <p>Optional:</p>
                     <Link to={'/albums/' + opt.url}>
                       <div style={{textAlign: 'center'}}>
-                        <img src={opt.image} alt={opt.name} className={this.classes.currentAlbumImage}  style={{height: '400px', width:'400px'}}/>
+                        <img src={opt.image} alt={opt.name} className={this.classes.currentAlbumImage}/>
                         <div>
                           <p className={this.classes.weeklyAlbumName}>{opt.name}</p>
                           <p className={this.classes.weeklyAlbumArtist}>{opt.artist}</p>
                         </div>
                       </div>
                     </Link>
-                  </div>
-                </div>
-                <div>
-                  <h2 style={{textAlign: 'center'}}>Our Rating Trend</h2>
-                  <div className="chart-container">
-                    <canvas id="ratingTrendChart"></canvas>
                   </div>
                 </div>
               </div>)

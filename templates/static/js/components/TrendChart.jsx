@@ -53,7 +53,15 @@ class TrendChart extends Component {
             }]
           }
         };
-        return <Line type={type} data={data} options={options}/>
+        return (
+          <div>
+            <h2 style={{textAlign: 'center'}}>Our Rating Trend</h2>
+            <div className="chart-container">
+              <canvas id="ratingTrendChart"></canvas>
+            </div>
+            <Line type={type} data={data} options={options}/>
+          </div>
+        );
     }
 }
 

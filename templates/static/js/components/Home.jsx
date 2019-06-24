@@ -55,6 +55,7 @@ class Home extends Component {
         super(props);
         this.classes = props.classes;
         this.state = {
+            width: window.innerWidth,
             thisWeek: null,
             loadingThisWeek: true,
             albums: [],
@@ -65,6 +66,20 @@ class Home extends Component {
             loadingAverages: true
         }
     }
+
+    componentWillMount() {
+      window.addEventListener('resize', this.handleWindowSizeChange);
+    }
+
+    // make sure to remove the listener
+    // when the component is not mounted anymore
+    componentWillUnmount() {
+      window.removeEventListener('resize', this.handleWindowSizeChange);
+    }
+
+    handleWindowSizeChange(){
+      this.setState({ width: window.innerWidth });
+    };
 
     componentDidMount(){
       fetch('/api/this-week', {
@@ -102,6 +117,8 @@ class Home extends Component {
     }
 
     render() {
+      const { width } = this.state;
+      const isMobile = width <= 500;
       let albumList;
       if (this.state.loadingPrevious){
         albumList = <CircularProgress className={this.state.progress} />
@@ -128,24 +145,36 @@ class Home extends Component {
       } else {
         trendchart = <TrendChart albumAverages={this.state.albumAverages} />;
       }
-      return (
-        <div className={this.classes.bodyDiv}>
-          <div className={this.classes.albumDiv}>
-            {albumList}
-          </div>
-          <div className={this.classes.thisWeekContainer}>
-            <div width="100%">
-              {thisWeek}
-            </div>
-            <div className={this.classes.chartContainer}>
-              {trendchart}
+      if (isMobile) {
+        return (
+          <div className={this.classes.bodyDiv}>
+            <div className={this.classes.thisWeekContainer}>
+              <div width="100%">
+                {thisWeek}
+              </div>
             </div>
           </div>
-          <div className={this.classes.membersDiv}>
-            {members}
+        );
+      } else {
+        return (
+          <div className={this.classes.bodyDiv}>
+            <div className={this.classes.albumDiv}>
+              {albumList}
+            </div>
+            <div className={this.classes.thisWeekContainer}>
+              <div width="100%">
+                {thisWeek}
+              </div>
+              <div className={this.classes.chartContainer}>
+                {trendchart}
+              </div>
+            </div>
+            <div className={this.classes.membersDiv}>
+              {members}
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     }
 }
 
