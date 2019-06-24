@@ -17,13 +17,14 @@ def start_in_thread(func, args=()):
 # Decorator for functions that use data from google sheets,
 # to automatically check for new updates.
 def check_updates(func):
-    def wrapper(reader, *args):
+    def wrapper(reader, *args, tries=0):
         try:
-            if reader.update_required():
+            if tries < 3 and reader.update_required():
                 start_in_thread(reader.update_values)
         except Exception as e:
             print ("Caught an exception! '%s'" % str(e))
             reader.reconnect()
+            wrapper(reader, *args, tries+1)
         return func(reader, *args)
     return wrapper
 
