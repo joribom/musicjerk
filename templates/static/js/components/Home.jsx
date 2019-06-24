@@ -17,6 +17,7 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
+        overflow: 'hidden',
         overflowY: 'hidden',
         textAlign: 'center',
     },
@@ -25,7 +26,8 @@ const styles = theme => ({
         flexGrow: '1',
         justifyContent: 'center',
         backgroundColor: '#2c2f33',
-        boxShadow: '0px 0px 15px #1b1a1a inset'
+        boxShadow: '0px 0px 15px #1b1a1a inset',
+        overflowY: 'scroll',
     },
 
     albumDiv: {

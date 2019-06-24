@@ -6,7 +6,7 @@ const styles = theme => ({
 
     thisWeek: {
         overflow: 'hidden',
-        overflowY: 'scroll',
+        //overflowY: 'scroll',
     },
 
     currentAlbumImage: {
