@@ -1,6 +1,4 @@
 python-dateutil
-gspread
-oauth2client
 flask
 jinja2
 spotipy
@@ -8,3 +6,6 @@ flask
 lyricsgenius
 discogs_client
 psycopg2
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
