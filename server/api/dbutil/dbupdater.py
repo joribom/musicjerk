@@ -1,6 +1,9 @@
-import gspread
 import re
-from oauth2client.service_account import ServiceAccountCredentials
+import os.path
+import pickle
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_time
 from dateutil.tz import tzlocal
@@ -19,8 +22,50 @@ updating = Lock()
 sheet = None
 latest_update_check = datetime.now(tzlocal())
 latest_update = None
-scope = ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive']
+SCOPE = ['https://www.googleapis.com/auth/spreadsheets']
+SPREADSHEET_ID = '1APR4vigWFUewWAMn1-iIML-4wKb0bWuS4f5xJW-KO2o'
+
+
+def get_sheet_time():
+    return sheet.values().get(
+        spreadsheetId=SPREADSHEET_ID,
+        range='A1'
+    ).execute().get('values')[0][0]
+
+
+def get_all_values():
+    print(get_sheet_time())
+    return sheet.values().get(
+        spreadsheetId=SPREADSHEET_ID,
+        range='A1:XX1000'
+    ).execute().get('values')
+
+
+def connect():
+    global sheet, SCOPE
+
+    creds = None
+    # The file token.pickle stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token:
+            creds = pickle.load(token)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPE)
+            creds = flow.run_local_server()
+        # Save the credentials for the next run
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+    service = build('sheets', 'v4', credentials=creds)
+
+    # Call the Sheets API
+    sheet = service.spreadsheets()
 
 
 def check_updates():
@@ -81,24 +126,15 @@ def update_required():
     global sheet, latest_update, latest_update_check
     if datetime.now(tzlocal()) - latest_update_check < timedelta(minutes=5):
         return False
-    latest_change_time = parse_time(sheet.cell(1, 1).value)
+    latest_change_time = parse_time(get_sheet_time())
     latest_update_check = datetime.now(tzlocal())
     if latest_update < latest_change_time:
         print("Update required...")
     return latest_update < latest_change_time
 
 
-def connect():
-    global sheet, scope
-    creds = ServiceAccountCredentials.from_json_keyfile_name(
-        'client_secret.json', scope
-    )
-    client = gspread.authorize(creds)
-    sheet = client.open("Musicjerk's big album sheet").sheet1
-
-
 def update_values():
-    global updating, sheet, latest_update, latest_update_check
+    global updating, latest_update, latest_update_check
     if updating.locked():
         return
     if latest_update is not None and not update_required():
@@ -107,7 +143,7 @@ def update_values():
     print("Updating values from google sheets...")
     latest_update = datetime.now(tzlocal())
     connect()
-    all_values = sheet.get_all_values()
+    all_values = get_all_values()
     top_row = all_values[0]
     users = {}
     print("Parsing users...")
@@ -121,7 +157,9 @@ def update_values():
     index = 3
     albums = []
     print("Parsing albums...")
+    N = len(users) * 3 + 7
     for row in all_values[2:]:
+        row += [''] * (N - len(row))
         title = re.sub(r'\([^\)]*\)', '', row[0])
         if not title:
             break
