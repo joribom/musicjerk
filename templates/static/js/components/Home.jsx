@@ -69,12 +69,14 @@ class Home extends Component {
 
     componentWillMount() {
       window.addEventListener('resize', this.handleWindowSizeChange);
+      document.body.style.overflowY = 'hidden';
     }
 
     // make sure to remove the listener
     // when the component is not mounted anymore
     componentWillUnmount() {
       window.removeEventListener('resize', this.handleWindowSizeChange);
+      document.body.style.overflowY = 'scroll';
     }
 
     handleWindowSizeChange(){

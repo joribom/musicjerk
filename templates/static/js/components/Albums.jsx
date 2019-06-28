@@ -111,71 +111,71 @@ class Albums extends Component {
     }
 
   render(){
-  const { albums } = this.state;
-  return (
-    <React.Fragment>
-      <MuiThemeProvider theme={darkTheme}>
-      <main>
-        {/* Hero unit */}
-        <div className={this.classes.heroUnit}>
-          <div className={this.classes.heroContent}>
-            <Typography component="h1" variant="h2" align="center" color="textPrimary" classes={{h2: this.classes.h2}} gutterBottom>
-              Previous Albums
-            </Typography>
-            <Typography variant="h6" align="center" color="textSecondary" paragraph>
-              These are all the albums that have been chosen for Musicjerk.
-            </Typography>
-            <div className={this.classes.heroButtons}>
+    const { albums } = this.state;
+    return (
+      <React.Fragment>
+        <MuiThemeProvider theme={darkTheme}>
+        <main>
+          {/* Hero unit */}
+          <div className={this.classes.heroUnit}>
+            <div className={this.classes.heroContent}>
+              <Typography component="h1" variant="h2" align="center" color="textPrimary" classes={{h2: this.classes.h2}} gutterBottom>
+                Previous Albums
+              </Typography>
+              <Typography variant="h6" align="center" color="textSecondary" paragraph>
+                These are all the albums that have been chosen for Musicjerk.
+              </Typography>
+              <div className={this.classes.heroButtons}>
+              </div>
             </div>
           </div>
-        </div>
-        <div className={classNames(this.classes.layout, this.classes.cardGrid)}>
-          {/* End hero unit */}
-          <Grid container spacing={40}>
-            {albums.map(album => (
-              <Grid item key={album.title} sm={6} md={4} lg={3}>
-                <Card className={this.classes.card}>
-                  <CardMedia
-                    className={this.classes.cardMedia}
-                    image={album.image_url != null ? album.image_url : 'https://cidco-smartcity.niua.org/wp-content/uploads/2017/08/No-image-found.jpg'}
-                    title={album.title}
-                  />
-                  <CardContent className={this.classes.cardContent}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {album.title}
-                    </Typography>
-                    <Typography>
-                      {album.summary.length > 100
-                        ? (album.summary.substring(0,97) + '...')
-                        : album.summary}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" variant="contained" color="secondary"
-                    component={NavLink} to={'/albums/' + album.url}>
-                      View
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </div>
-      </main>
-      {/* Footer */}
-      <footer className={this.classes.footer}>
-        <Typography variant="h6" align="center" gutterBottom>
-          Big Musicjerk
-        </Typography>
-        <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-          That's all folks!
-        </Typography>
-      </footer>
-      {/* End footer */}
-      </MuiThemeProvider>
-    </React.Fragment>
-  );
-  }
+          <div className={classNames(this.classes.layout, this.classes.cardGrid)}>
+            {/* End hero unit */}
+            <Grid container spacing={40}>
+              {albums.map(album => (
+                <Grid item key={album.title} sm={6} md={4} lg={3}>
+                  <Card className={this.classes.card}>
+                    <CardMedia
+                      className={this.classes.cardMedia}
+                      image={album.image_url != null ? album.image_url : 'https://cidco-smartcity.niua.org/wp-content/uploads/2017/08/No-image-found.jpg'}
+                      title={album.title}
+                    />
+                    <CardContent className={this.classes.cardContent}>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {album.title}
+                      </Typography>
+                      <Typography>
+                        {album.summary.length > 100
+                          ? (album.summary.substring(0,97) + '...')
+                          : album.summary}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small" variant="contained" color="secondary"
+                      component={NavLink} to={'/albums/' + album.url}>
+                        View
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </div>
+        </main>
+        {/* Footer */}
+        <footer className={this.classes.footer}>
+          <Typography variant="h6" align="center" gutterBottom>
+            Big Musicjerk
+          </Typography>
+          <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
+            That's all folks!
+          </Typography>
+        </footer>
+        {/* End footer */}
+        </MuiThemeProvider>
+      </React.Fragment>
+    );
+    }
   }
 
 Albums.propTypes = {
