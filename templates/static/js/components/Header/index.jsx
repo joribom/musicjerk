@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
-import authenticator from './Authenticator'
-
-const styles = theme => ({
-    text: {
-        textTransform: 'capitalize'
-    },
-});
-
+import authenticator from '../Authenticator'
+import './styles.scss';
 
 class Header extends Component {
 
@@ -19,8 +13,8 @@ class Header extends Component {
 
   render() {
     return (
-      <div className="header">
-          <h1 className={this.classes.text}>Big Musicjerk{
+      <div className='header'>
+          <h1>Big Musicjerk{
               authenticator.validated()
               ? (', logged in as ' + authenticator.username())
               : ''
@@ -30,5 +24,4 @@ class Header extends Component {
   }
 }
 
-
-export default withStyles(styles)(Header);
+export default Header;
