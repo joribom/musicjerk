@@ -28,8 +28,8 @@ class TopBar extends Component {
         <NavLink className='link' to="/lyrics">Lyrics</NavLink>
         {user_handling}
         <div className='searchDiv'>
-          <Input className='searchInput' type="text" placeholder="Search..."/>
-          <Button className='searchButton' type="submit">
+          <Input type="text" placeholder="Search..."/>
+          <Button type="submit">
             <Search/>
           </Button>
         </div>

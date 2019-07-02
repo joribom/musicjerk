@@ -37,25 +37,25 @@
   flex-direction: row;
   float: right;
   align-items: center;
-}
 
-.searchInput {
-  border: none;
-  background-color: #ffffff;
-  font-size: 18px;
-  height: 30px;
-  padding: 6px;
-}
+  Input {
+    border: none;
+    background-color: #ffffff;
+    font-size: 18px;
+    height: 30px;
+    padding: 6px;
+  }
 
-.searchButton {
-  padding: 6px 10px;
-  margin-right: 16px;
-  background: #ddd;
-  font-size: 17px;
-  border: none;
-  cursor: pointer;
-  height: 42px;
-  width: 44px;
-  font-family: Montserrat, sans-serif;
-  color: #ffffff;
+  Button {
+    padding: 6px 10px;
+    margin-right: 16px;
+    background: #ddd;
+    font-size: 17px;
+    border: none;
+    cursor: pointer;
+    height: 42px;
+    width: 44px;
+    font-family: Montserrat, sans-serif;
+    color: #ffffff;
+  }
 }
