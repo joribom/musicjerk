@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import Search from '@material-ui/icons/Search';
 import withStyles from '@material-ui/core/styles/withStyles';
 import authenticator from '../Authenticator';
-import './TopBar.scss';
+import './styles.scss';
 
 class TopBar extends Component {
   constructor (props) {
